@@ -18,27 +18,27 @@ class SistemaDeLivraria:
     def __init__(self):
 
         self.livros = [
-                        Livro("001", "O Grande Gatsby", "F. Scott Fitzgerald", "Romance", 1925, 45.0, 80),
-                        Livro("002", "1984", "George Orwell", "Distopia", 1949, 55.5, 100),
-                        Livro("003", "Sapiens", "Yuval Noah Harari", "História", 2011, 60.0, 120),
-                        Livro("004", "A Guerra dos Tronos", "George R. R. Martin", "Fantasia", 1996, 90.0, 70),
-                        Livro("005", "O Pequeno Príncipe", "Antoine de Saint-Exupéry", "Infantil", 1943, 40.0, 150),
-                        Livro("006", "A Origem das Espécies", "Charles Darwin", "Ciência", 1859, 85.0, 200),
-                        Livro("007", "A Arte da Guerra", "Sun Tzu", "Estratégia", -500, 50.0, 90),
-                        Livro("008", "O Diário de Anne Frank", "Anne Frank", "Biografia", 1947, 35.0, 110),
-                        Livro("009", "O Alquimista", "Paulo Coelho", "Ficção", 1988, 45.0, 140),
-                        Livro("010", "O Senhor dos Anéis: A Sociedade do Anel", "J.R.R. Tolkien", "Fantasia", 1954, 80.0, 130),
-                        Livro("011", "O Caçador de Pipas", "Khaled Hosseini", "Drama", 2003, 60.0, 100),
-                        Livro("012", "O Nome da Rosa", "Umberto Eco", "Mistério", 1980, 70.0, 150),
-                        Livro("013", "Crime e Castigo", "Fiódor Dostoiévski", "Filosofia", 1866, 95.0, 90),
-                        Livro("014", "O Mundo de Sofia", "Jostein Gaarder", "Filosofia", 1991, 65.0, 110),
-                        Livro("015", "A Menina que Roubava Livros", "Markus Zusak", "Drama", 2005, 75.0, 130),
-                        Livro("016", "O Senhor dos Anéis: As Duas Torres", "J.R.R. Tolkien", "Fantasia", 1954, 85.0, 150),
-                        Livro("017", "O Guia do Mochileiro das Galáxias", "Douglas Adams", "Ficção", 1979, 72.5, 180),
-                        Livro("018", "A Revolução dos Bichos", "George Orwell", "Distopia", 1945, 40.0, 200),
-                        Livro("019", "O Hobbit", "J.R.R. Tolkien", "Ficção", 1937, 50.0, 90),
-                        Livro("020", "O Sol é para Todos", "Harper Lee", "Drama", 1960, 60.0, 100)
-]  # 0              1              2             3      4     5     6
+            Livro("001", "O Grande Gatsby", "F. Scott Fitzgerald", "Romance", 1925, 45.0, 80),
+            Livro("002", "1984", "George Orwell", "Distopia", 1949, 55.5, 100),
+            Livro("003", "Sapiens", "Yuval Noah Harari", "História", 2011, 60.0, 120),
+            Livro("004", "A Guerra dos Tronos", "George R. R. Martin", "Fantasia", 1996, 90.0, 70),
+            Livro("005", "O Pequeno Príncipe", "Antoine de Saint-Exupéry", "Infantil", 1943, 40.0, 150),
+            Livro("006", "A Origem das Espécies", "Charles Darwin", "Ciência", 1859, 85.0, 200),
+            Livro("007", "A Arte da Guerra", "Sun Tzu", "Estratégia", -500, 50.0, 90),
+            Livro("008", "O Diário de Anne Frank", "Anne Frank", "Biografia", 1947, 35.0, 110),
+            Livro("009", "O Alquimista", "Paulo Coelho", "Ficção", 1988, 45.0, 140),
+            Livro("010", "O Senhor dos Anéis: A Sociedade do Anel", "J.R.R. Tolkien", "Fantasia", 1954, 80.0, 130),
+            Livro("011", "O Caçador de Pipas", "Khaled Hosseini", "Drama", 2003, 60.0, 100),
+            Livro("012", "O Nome da Rosa", "Umberto Eco", "Mistério", 1980, 70.0, 150),
+            Livro("013", "Crime e Castigo", "Fiódor Dostoiévski", "Filosofia", 1866, 95.0, 90),
+            Livro("014", "O Mundo de Sofia", "Jostein Gaarder", "Filosofia", 1991, 65.0, 110),
+            Livro("015", "A Menina que Roubava Livros", "Markus Zusak", "Drama", 2005, 75.0, 130),
+            Livro("016", "O Senhor dos Anéis: As Duas Torres", "J.R.R. Tolkien", "Fantasia", 1954, 85.0, 150),
+            Livro("017", "O Guia do Mochileiro das Galáxias", "Douglas Adams", "Ficção", 1979, 72.5, 180),
+            Livro("018", "A Revolução dos Bichos", "George Orwell", "Distopia", 1945, 40.0, 200),
+            Livro("019", "O Hobbit", "J.R.R. Tolkien", "Ficção", 1937, 50.0, 90),
+            Livro("020", "O Sol é para Todos", "Harper Lee", "Drama", 1960, 60.0, 100)
+        ]  # 0              1              2             3      4     5     6
 
     def info(self):  # OPÇÃO 2 - MENU INTERATIVO
 
@@ -50,7 +50,7 @@ class SistemaDeLivraria:
                   f"Ano: {livro.ano}\n"
                   f"Valor: R$ {livro.valor}\n"
                   f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                  f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$ ")
+                  f"Valor em Estoque: R$ {livro.valor * livro.quantidade_em_estoque}")
 
         print()
         print(5 * "-=")
@@ -89,19 +89,19 @@ class SistemaDeLivraria:
             self.info()
 
         elif pergunta_menu_interativo == 3:
-            self.BuscaPorNome()
+            self.BuscarPorNome()
 
         elif pergunta_menu_interativo == 4:
-            self.BuscaPorCategoria()
+            self.BuscarPorCategoria()
 
         elif pergunta_menu_interativo == 5:
-            self.BuscaPorPreco()
+            self.BuscarPorPreco()
 
         elif pergunta_menu_interativo == 6:
-            self.BuscaPorQuantidadeEmEstoque()
+            self.BuscarPorQuantidadeEmEstoque()
 
         elif pergunta_menu_interativo == 7:
-            self.BuscaPorValorDeEstoque()
+            self.BuscarPorValorDeEstoque()
 
         else:
             if pergunta_menu_interativo == 0:
@@ -111,7 +111,7 @@ class SistemaDeLivraria:
                 print('             OBRIGADO')
                 sys.exit()
 
-    def CadastrarNovoLivro(self):  # OPÇÃO 1
+    def CadastrarNovoLivro(self):  # OPÇÃO 1 DO MENU INTERATIVO
         print()
         print(18 * "-=")
         print("     >> CADASTRO DE LIVROS <<")
@@ -127,7 +127,8 @@ class SistemaDeLivraria:
             self.valor = int(input('>> Valor do livro: '))
             self.quantidade_em_estoque = int(input('>> Digite a quantidade em estoque do livro: '))
 
-            self.livros.append(Livro(self.codigo, self.titulo, self.editora, self.categoria, self.ano, self.valor, self.quantidade_em_estoque))
+            self.livros.append(Livro(self.codigo, self.titulo, self.editora, self.categoria, self.ano, self.valor,
+                                     self.quantidade_em_estoque))
 
             # INTERAÇÃO-#INTERAÇÃO-#INTERAÇÃO-#INTERAÇÃO
 
@@ -147,7 +148,7 @@ class SistemaDeLivraria:
                 self.ExibirMenuInterativo()
                 break
 
-    def BuscaPorNome(self):  # OPÇÃO 3 DO MENU INTERATIVO
+    def BuscarPorNome(self):  # OPÇÃO 3 DO MENU INTERATIVO
         print()
         print(18 * "-=")
         print("     --BUSCAR LIVRO POR NOME--")
@@ -159,7 +160,7 @@ class SistemaDeLivraria:
             if pergunta_1_busca_por_nome.lower() != "0":  # Se o usuário digitou algum nome
 
                 controle_nome = 0
-                livro_encontrado = False #Se continuar falso, significa que nenhum livro foi encontrado.
+                livro_encontrado = False  # Se continuar falso, significa que nenhum livro foi encontrado.
                 for livro in self.livros:
                     if pergunta_1_busca_por_nome.lower() == livro.titulo.lower():
                         print()
@@ -170,7 +171,7 @@ class SistemaDeLivraria:
                               f"Valor: R$ {livro.valor}\n"
                               f"Estoque: {livro.quantidade_em_estoque} unidades\n"
                               f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$ ")
-                        controle_nome +=1
+                        controle_nome += 1
                         livro_encontrado = True
 
                 if not livro_encontrado:
@@ -199,7 +200,7 @@ class SistemaDeLivraria:
             else:
                 self.ExibirMenuInterativo()
 
-    def BuscaPorCategoria(self):  # OPÇÃO 4 DO MENU INTERATIVO
+    def BuscarPorCategoria(self):  # OPÇÃO 4 DO MENU INTERATIVO
         print()
         print(18 * "-=")
         print("   --BUSCAR LIVRO POR CATEGORIA--")
@@ -224,7 +225,6 @@ class SistemaDeLivraria:
                               f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$ ")
                         controle_categoria += 1
                         categoria_encontrada = True
-
 
                 if not categoria_encontrada:
                     print()
@@ -253,7 +253,7 @@ class SistemaDeLivraria:
                 if pergunta_1_busca_por_categoria == "0":
                     self.ExibirMenuInterativo()
 
-    def BuscaPorPreco(self):  # OPÇÃO 5 DO MENU INTERATIVO
+    def BuscarPorPreco(self):  # OPÇÃO 5 DO MENU INTERATIVO
         print()
         print(18 * "-=")
         print("   --BUSCAR LIVROS POR PREÇO--")
@@ -261,7 +261,7 @@ class SistemaDeLivraria:
 
         while True:
             print()
-            pergunta_1_busca_por_preco = int(input("Digite seu valor máximo (ou 0 para sair): "))
+            pergunta_1_busca_por_preco = float(input("Digite seu valor máximo (ou 0 para sair): "))
 
             if pergunta_1_busca_por_preco != 0:
 
@@ -308,7 +308,7 @@ class SistemaDeLivraria:
                 if pergunta_1_busca_por_preco == 0:
                     self.ExibirMenuInterativo()
 
-    def BuscaPorQuantidadeEmEstoque(self):  # OPÇÃO 6 DO MENU INTERATIVO
+    def BuscarPorQuantidadeEmEstoque(self):  # OPÇÃO 6 DO MENU INTERATIVO
         print()
         print(10 * "-=")
         print("--BUSCAR LIVRO POR QUANTIDADE EM ESTOQUE--")
@@ -362,7 +362,7 @@ class SistemaDeLivraria:
                 if pergunta_1_busca_por_estoque == 0:
                     self.ExibirMenuInterativo()
 
-    def BuscaPorValorDeEstoque(self):  # OPÇÃO 7
+    def BuscarPorValorDeEstoque(self):  # OPÇÃO 7 DO MENU INTERATIVO
         print()
         print(10 * "-=")
         print("--BUSCA DE PRODUTO POR VALOR EM ESTOQUE--")
@@ -415,6 +415,7 @@ class SistemaDeLivraria:
             else:
                 if pergunta_1_busca_por_valor_de_estoque == 0:
                     self.ExibirMenuInterativo()
+
 
 if __name__ == '__main__':
     SistemaDeLivraria().ExibirMenuInterativo()
