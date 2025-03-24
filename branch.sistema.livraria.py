@@ -82,29 +82,30 @@ class SistemaDeLivraria:
 
         pergunta_menu_interativo = int(input("Digite a opção desejada >>> "))
 
-        if pergunta_menu_interativo == 1:
-            self.CadastrarNovoLivro()
+        match pergunta_menu_interativo:
 
-        elif pergunta_menu_interativo == 2:
-            self.info()
+            case 1:
+                self.CadastrarNovoLivro()
 
-        elif pergunta_menu_interativo == 3:
-            self.BuscarPorNome()
+            case 2:
+                self.info()
 
-        elif pergunta_menu_interativo == 4:
-            self.BuscarPorCategoria()
+            case 3:
+                self.BuscarPorNome()
 
-        elif pergunta_menu_interativo == 5:
-            self.BuscarPorPreco()
+            case 4:
+                self.BuscarPorCategoria()
 
-        elif pergunta_menu_interativo == 6:
-            self.BuscarPorQuantidadeEmEstoque()
+            case 5:
+                self.BuscarPorPreco()
 
-        elif pergunta_menu_interativo == 7:
-            self.BuscarPorValorDeEstoque()
+            case 6:
+                self.BuscarPorQuantidadeEmEstoque()
 
-        else:
-            if pergunta_menu_interativo == 0:
+            case 7:
+                self.ValorTotalEstoque()
+
+            case 0:
                 print()
                 print(18 * "-=")
                 print()
@@ -362,59 +363,75 @@ class SistemaDeLivraria:
                 if pergunta_1_busca_por_estoque == 0:
                     self.ExibirMenuInterativo()
 
-    def BuscarPorValorDeEstoque(self):  # OPÇÃO 7 DO MENU INTERATIVO
+    def ValorTotalEstoque(self):  # OPÇÃO 7 DO MENU INTERATIVO
         print()
         print(10 * "-=")
-        print("--BUSCA DE PRODUTO POR VALOR EM ESTOQUE--")
+        print("--VALOR TOTAL EM ESTOQUE--")
         print()
 
-        while True:
-            print()
-            pergunta_1_busca_por_valor_de_estoque = int(input("Digite o valor mínimo da busca: (0 - SAIR): "))
+        valor_total_em_estoque = 0
+        for livro in self.livros:
+            valor_total_em_estoque += (livro.valor * livro.quantidade_em_estoque)
 
-            if pergunta_1_busca_por_valor_de_estoque != 0:
+        print(f"O Valor total em estoque é de: R${valor_total_em_estoque}")
+        print()
+        print("> 1. Buscar livro por valor total em estoque")
+        print("> 2. Voltar ao menu principal")
+        print()
 
-                controle_de_iteracoes_busca_por_valor_de_estoque = 0
+        pergunta_1_busca_por_valor_de_estoque = int(input("Digite a opção desejada: "))
 
-                for livro in self.livros:
-                    valor_total_de_estoque = livro.quantidade_em_estoque * livro.valor
-                    if pergunta_1_busca_por_valor_de_estoque < valor_total_de_estoque:
+        if pergunta_1_busca_por_valor_de_estoque == 1:
+
+            while True:
+                print()
+                pergunta_2_busca_por_valor_de_estoque = int(input("Digite o valor mínimo da busca: (0 - SAIR): "))
+
+                if pergunta_2_busca_por_valor_de_estoque != 0:
+
+                    controle_de_iteracoes_busca_por_valor_de_estoque = 0
+
+                    for livro in self.livros:
+                        valor_total_de_estoque = livro.quantidade_em_estoque * livro.valor
+                        if pergunta_2_busca_por_valor_de_estoque < valor_total_de_estoque:
+                            print()
+                            print(f">>>CÓDIGO: {livro.codigo}\n"
+                                  f"Título: {livro.titulo}\n"
+                                  f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$\n"
+                                  f"Estoque: {livro.quantidade_em_estoque} unidades\n")
+
+                        else:
+                            controle_de_iteracoes_busca_por_valor_de_estoque += 1
+
+                    if controle_de_iteracoes_busca_por_valor_de_estoque == len(self.livros):
                         print()
-                        print(f">>>CÓDIGO: {livro.codigo}\n"
-                              f"Título: {livro.titulo}\n"
-                              f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$\n"
-                              f"Estoque: {livro.quantidade_em_estoque} unidades\n")
+                        print("VALOR ESTIMADO INEXISTENTE!")
+                        print()
+                        print("> 1. Solicitar nova busca")
+                        print("> 2. Voltar ao menu principal")
+                        print()
+                        pergunta_3_busca_por_por_valor_de_estoque = int(input("Digite a opção desejada >>> "))
+
+                        if pergunta_3_busca_por_por_valor_de_estoque != 1:
+                            self.ExibirMenuInterativo()
 
                     else:
-                        controle_de_iteracoes_busca_por_valor_de_estoque += 1
+                        print()
+                        print(18 * "-=")
+                        print(f"Valor informado : {pergunta_2_busca_por_valor_de_estoque}")
+                        print(f"Total de livros com valor estimado em estoque: "
+                              f"{len(self.livros) - controle_de_iteracoes_busca_por_valor_de_estoque}")
+                        print()
+                        pergunta_4_busca_por_valor_de_estoque = input("Gostaria de solicitar uma nova busca (s/n)? ")
 
-                if controle_de_iteracoes_busca_por_valor_de_estoque == len(self.livros):
-                    print()
-                    print("VALOR ESTIMADO INEXISTENTE!")
-                    print()
-                    print("> 1. Solicitar nova busca")
-                    print("> 2. Voltar ao menu principal")
-                    print()
-                    pergunta_2_busca_por_por_valor_de_estoque = int(input("Digite a opção desejada >>> "))
-
-                    if pergunta_2_busca_por_por_valor_de_estoque != 1:
-                        self.ExibirMenuInterativo()
+                        if pergunta_4_busca_por_valor_de_estoque.lower() == "n":
+                            self.ExibirMenuInterativo()
 
                 else:
-                    print()
-                    print(18 * "-=")
-                    print(f"Valor informado : {pergunta_1_busca_por_valor_de_estoque}")
-                    print(f"Total de livros com valor estimado em estoque: "
-                          f"{len(self.livros) - controle_de_iteracoes_busca_por_valor_de_estoque}")
-                    print()
-                    pergunta_3_busca_por_valor_de_estoque = input("Gostaria de solicitar uma nova busca (s/n)? ")
-
-                    if pergunta_3_busca_por_valor_de_estoque.lower() == "n":
+                    if pergunta_2_busca_por_valor_de_estoque == 0:
                         self.ExibirMenuInterativo()
-
-            else:
-                if pergunta_1_busca_por_valor_de_estoque == 0:
-                    self.ExibirMenuInterativo()
+        else:
+            self.ExibirMenuInterativo()
 
 
 if __name__ == '__main__':
