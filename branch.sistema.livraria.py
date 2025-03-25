@@ -12,6 +12,16 @@ class Livro:
         self.valor = valor
         self.quantidade_em_estoque = quantidade_em_estoque
 
+    def info(self):
+        print()
+        return (f">>>CÓDIGO: {self.codigo}\n"
+                f"Título/Editora: {self.titulo}/{self.editora}\n"
+                f"Categoria: {self.categoria}\n"
+                f"Ano: {self.ano}\n"
+                f"Valor: R$ {self.valor}\n"
+                f"Estoque: {self.quantidade_em_estoque} unidades\n"
+                f"Valor em Estoque: R$ {self.valor * self.quantidade_em_estoque}")
+
 
 class SistemaDeLivraria:
 
@@ -40,26 +50,20 @@ class SistemaDeLivraria:
             Livro("020", "O Sol é para Todos", "Harper Lee", "Drama", 1960, 60.0, 100)
         ]  # 0              1              2             3      4     5     6
 
-    def info(self):  # OPÇÃO 2 - MENU INTERATIVO
+    def MostrarInfo(self):  # OPÇÃO 2 - MENU INTERATIVO
 
         for livro in self.livros:
-            print()
-            print(f">>>CÓDIGO: {livro.codigo}\n"
-                  f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                  f"Categoria: {livro.categoria}\n"
-                  f"Ano: {livro.ano}\n"
-                  f"Valor: R$ {livro.valor}\n"
-                  f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                  f"Valor em Estoque: R$ {livro.valor * livro.quantidade_em_estoque}")
+            print(livro.info())
 
         print()
         print(5 * "-=")
         print("RESPONDA COM S / N:")
-        pergunta_info = input('DESEJA CADASTRAR MAIS LIVROS? ')
+
+        pergunta_MostrarInfo = input('DESEJA CADASTRAR MAIS LIVROS? ')
 
         # opcao_escolhida_info = self
 
-        if pergunta_info.lower() == "s":
+        if pergunta_MostrarInfo.lower() == "s":
             self.CadastrarNovoLivro()
         else:
             self.ExibirMenuInterativo()
@@ -88,7 +92,7 @@ class SistemaDeLivraria:
                 self.CadastrarNovoLivro()
 
             case 2:
-                self.info()
+                self.MostrarInfo()
 
             case 3:
                 self.BuscarPorNome()
@@ -120,16 +124,23 @@ class SistemaDeLivraria:
         while True:
 
             print()
-            self.codigo = input(">> Código do livro: ")
-            self.titulo = input(">> Título do livro: ")
-            self.editora = input(">> Editora do livro: ")
-            self.categoria = input(">> Categoria do livro: ")
-            self.ano = int(input('>> Ano do livro: '))
-            self.valor = int(input('>> Valor do livro: '))
-            self.quantidade_em_estoque = int(input('>> Digite a quantidade em estoque do livro: '))
+            # codigo = input(">> Código do livro: ")
+            # titulo = input(">> Título do livro: ")
+            # editora = input(">> Editora do livro: ")
+            # categoria = input(">> Categoria do livro: ")
+            # ano = int(input('>> Ano do livro: '))
+            # valor = int(input('>> Valor do livro: '))
+            # quantidade_em_estoque = int(input('>> Digite a quantidade em estoque do livro: '))
+            #
+            # self.livros.append(Livro(codigo, titulo, editora, categoria, ano, valor, quantidade_em_estoque))
 
-            self.livros.append(Livro(self.codigo, self.titulo, self.editora, self.categoria, self.ano, self.valor,
-                                     self.quantidade_em_estoque))
+            self.livros.append(Livro(input(">> Código do livro: "),
+                                     input(">> Título do livro: "),
+                                     input(">> Editora do livro: "),
+                                     input(">> Categoria do livro: "),
+                                     input(">> Ano do livro: "),
+                                     int(input('>> Valor do livro: ')),
+                                     int(input('>> Digite a quantidade em estoque do livro: '))))
 
             # INTERAÇÃO-#INTERAÇÃO-#INTERAÇÃO-#INTERAÇÃO
 
@@ -164,14 +175,7 @@ class SistemaDeLivraria:
                 livro_encontrado = False  # Se continuar falso, significa que nenhum livro foi encontrado.
                 for livro in self.livros:
                     if pergunta_1_busca_por_nome.lower() == livro.titulo.lower():
-                        print()
-                        print(f">>>CÓDIGO: {livro.codigo}\n"
-                              f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                              f"Categoria: {livro.categoria}\n"
-                              f"Ano: {livro.ano}\n"
-                              f"Valor: R$ {livro.valor}\n"
-                              f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                              f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$ ")
+                        livro.info()
                         controle_nome += 1
                         livro_encontrado = True
 
@@ -216,14 +220,7 @@ class SistemaDeLivraria:
                 categoria_encontrada = False
                 for livro in self.livros:
                     if pergunta_1_busca_por_categoria.lower() == livro.categoria.lower():
-                        print()
-                        print(f">>>CÓDIGO: {livro.codigo}\n"
-                              f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                              f"Categoria: {livro.categoria}\n"
-                              f"Ano: {livro.ano}\n"
-                              f"Valor: R$ {livro.valor}\n"
-                              f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                              f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$ ")
+                        livro.info()
                         controle_categoria += 1
                         categoria_encontrada = True
 
@@ -270,15 +267,8 @@ class SistemaDeLivraria:
 
                 for livro in self.livros:
                     if livro.valor <= pergunta_1_busca_por_preco:
-
                         print()
-                        print(f">>>CÓDIGO: {livro.codigo}\n"
-                              f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                              f"Categoria: {livro.categoria}\n"
-                              f"Ano: {livro.ano}\n"
-                              f"Valor: R$ {livro.valor}\n"
-                              f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                              f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$ ")
+                        livro.info()
                     else:
                         controle_de_iteracoes_busca_preco += 1
 
@@ -325,10 +315,7 @@ class SistemaDeLivraria:
 
                 for livro in self.livros:
                     if livro.quantidade_em_estoque <= pergunta_1_busca_por_estoque:
-                        print()
-                        print(f">>>CÓDIGO: {livro.codigo}\n"
-                              f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                              f"Quantidade Em Estoque: {livro.quantidade_em_estoque} unidades\n")
+                        livro.info()
 
 
                     else:
@@ -394,11 +381,7 @@ class SistemaDeLivraria:
                     for livro in self.livros:
                         valor_total_de_estoque = livro.quantidade_em_estoque * livro.valor
                         if pergunta_2_busca_por_valor_de_estoque < valor_total_de_estoque:
-                            print()
-                            print(f">>>CÓDIGO: {livro.codigo}\n"
-                                  f"Título: {livro.titulo}\n"
-                                  f"Valor em Estoque: {livro.valor * livro.quantidade_em_estoque}R$\n"
-                                  f"Estoque: {livro.quantidade_em_estoque} unidades\n")
+                            livro.info()
 
                         else:
                             controle_de_iteracoes_busca_por_valor_de_estoque += 1
