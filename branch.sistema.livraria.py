@@ -171,12 +171,10 @@ class SistemaDeLivraria:
 
             if pergunta_1_busca_por_nome.lower() != "0":  # Se o usuário digitou algum nome
 
-                controle_nome = 0
                 livro_encontrado = False  # Se continuar falso, significa que nenhum livro foi encontrado.
                 for livro in self.livros:
-                    if pergunta_1_busca_por_nome.lower() == livro.titulo.lower():
-                        livro.info()
-                        controle_nome += 1
+                    if pergunta_1_busca_por_nome.lower() in livro.titulo.lower():
+                        print(livro.info())
                         livro_encontrado = True
 
                 if not livro_encontrado:
@@ -194,8 +192,6 @@ class SistemaDeLivraria:
 
                 else:
                     print(18 * "-=")
-                    print(f"Nome informado: {pergunta_1_busca_por_nome}")
-                    print(f"Quantidade de livros encontrados: {len(self.livros) - controle_nome}")
                     print()
                     pergunta_3_busca_por_nome = input("Gostaria de consultar outro livro (s/ n)? ")
 
@@ -216,12 +212,10 @@ class SistemaDeLivraria:
 
             if pergunta_1_busca_por_categoria.lower() != "0":
 
-                controle_categoria = 0
                 categoria_encontrada = False
                 for livro in self.livros:
                     if pergunta_1_busca_por_categoria.lower() == livro.categoria.lower():
-                        livro.info()
-                        controle_categoria += 1
+                        print(livro.info())
                         categoria_encontrada = True
 
                 if not categoria_encontrada:
@@ -239,8 +233,6 @@ class SistemaDeLivraria:
 
                 else:
                     print(18 * "-=")
-                    print(f"Categoria informada: {pergunta_1_busca_por_categoria}")
-                    print(f"Total de livros: {len(self.livros) - controle_categoria}")
                     print()
                     pergunta_3_busca_por_categoria = input("Gostaria de consultar outra categoria (s/n)? ")
 
@@ -263,12 +255,10 @@ class SistemaDeLivraria:
 
             if pergunta_1_busca_por_preco != 0:
 
-                controle_de_iteracoes_busca_preco = 0
-
                 for livro in self.livros:
                     if livro.valor <= pergunta_1_busca_por_preco:
                         print()
-                        livro.info()
+                        print(livro.info())
                     else:
                         controle_de_iteracoes_busca_preco += 1
 
@@ -287,8 +277,6 @@ class SistemaDeLivraria:
 
                 else:
                     print(18 * "-=")
-                    print(f"Preço informado: {pergunta_1_busca_por_preco}")
-                    print(f"Total de livros com preço estimado: {len(self.livros) - controle_de_iteracoes_busca_preco}")
                     print()
                     pergunta_3_busca_por_preco = input("Gostaria de colicitar uma nova busca (s/n)? ")
 
