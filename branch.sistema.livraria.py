@@ -255,14 +255,16 @@ class SistemaDeLivraria:
 
             if pergunta_1_busca_por_preco != 0:
 
+                preco_encontrado = False
+                controle_de_iteracoes_busca_por_preco = 0
                 for livro in self.livros:
                     if livro.valor <= pergunta_1_busca_por_preco:
+                        preco_encontrado = True
                         print()
                         print(livro.info())
-                    else:
-                        controle_de_iteracoes_busca_preco += 1
+                        controle_de_iteracoes_busca_por_preco+=1
 
-                if controle_de_iteracoes_busca_preco == len(self.livros):
+                if preco_encontrado == False:
                     print()
                     print("PREÇO ESTIMADO INEXISTENTE!")
                     print()
@@ -277,6 +279,8 @@ class SistemaDeLivraria:
 
                 else:
                     print(18 * "-=")
+                    print()
+                    print(f"Quantidade de livros com preço estimado: {controle_de_iteracoes_busca_por_preco}")
                     print()
                     pergunta_3_busca_por_preco = input("Gostaria de colicitar uma nova busca (s/n)? ")
 
