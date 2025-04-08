@@ -1,3 +1,5 @@
+from ntpath import split
+
 import sys
 
 
@@ -20,39 +22,34 @@ class Livro:
                 f"Ano: {self.ano}\n"
                 f"Valor: R$ {self.valor}\n"
                 f"Estoque: {self.quantidade_em_estoque} unidades\n"
-                f"Valor em Estoque: R$ {self.valor * self.quantidade_em_estoque}")
-
+                f"Valor Total em Estoque: R$ {self.valor * self.quantidade_em_estoque}")
 
 class SistemaDeLivraria:
 
     def __init__(self):
 
-        self.livros = [
-            Livro("001", "O Grande Gatsby", "F. Scott Fitzgerald", "Romance", 1925, 45.0, 80),
-            Livro("002", "1984", "George Orwell", "Distopia", 1949, 55.5, 100),
-            Livro("003", "Sapiens", "Yuval Noah Harari", "História", 2011, 60.0, 120),
-            Livro("004", "A Guerra dos Tronos", "George R. R. Martin", "Fantasia", 1996, 90.0, 70),
-            Livro("005", "O Pequeno Príncipe", "Antoine de Saint-Exupéry", "Infantil", 1943, 40.0, 150),
-            Livro("006", "A Origem das Espécies", "Charles Darwin", "Ciência", 1859, 85.0, 200),
-            Livro("007", "A Arte da Guerra", "Sun Tzu", "Estratégia", -500, 50.0, 90),
-            Livro("008", "O Diário de Anne Frank", "Anne Frank", "Biografia", 1947, 35.0, 110),
-            Livro("009", "O Alquimista", "Paulo Coelho", "Ficção", 1988, 45.0, 140),
-            Livro("010", "O Senhor dos Anéis: A Sociedade do Anel", "J.R.R. Tolkien", "Fantasia", 1954, 80.0, 130),
-            Livro("011", "O Caçador de Pipas", "Khaled Hosseini", "Drama", 2003, 60.0, 100),
-            Livro("012", "O Nome da Rosa", "Umberto Eco", "Mistério", 1980, 70.0, 150),
-            Livro("013", "Crime e Castigo", "Fiódor Dostoiévski", "Filosofia", 1866, 95.0, 90),
-            Livro("014", "O Mundo de Sofia", "Jostein Gaarder", "Filosofia", 1991, 65.0, 110),
-            Livro("015", "A Menina que Roubava Livros", "Markus Zusak", "Drama", 2005, 75.0, 130),
-            Livro("016", "O Senhor dos Anéis: As Duas Torres", "J.R.R. Tolkien", "Fantasia", 1954, 85.0, 150),
-            Livro("017", "O Guia do Mochileiro das Galáxias", "Douglas Adams", "Ficção", 1979, 72.5, 180),
-            Livro("018", "A Revolução dos Bichos", "George Orwell", "Distopia", 1945, 40.0, 200),
-            Livro("019", "O Hobbit", "J.R.R. Tolkien", "Ficção", 1937, 50.0, 90),
-            Livro("020", "O Sol é para Todos", "Harper Lee", "Drama", 1960, 60.0, 100)
-        ]  # 0              1              2             3      4     5     6
+        self.Livros = []
+
 
     def MostrarInfo(self):  # OPÇÃO 2 - MENU INTERATIVO
 
-        for livro in self.livros:
+        banco_de_livros = open("Livros.txt", "r")
+
+        linha_do_banco = banco_de_livros.readline().replace("\n","")
+
+        banco_editado = linha_do_banco.split(",")
+
+        while linha_do_banco:
+
+            novo_livro = Livro(banco_editado[0],banco_editado[1],banco_editado[2],banco_editado[3],int(banco_editado[4]),float(banco_editado[5]),int(banco_editado[6]))
+            self.Livros.append(novo_livro)
+
+            linha_do_banco = banco_de_livros.readline().replace("\n", "")
+            banco_editado = linha_do_banco.split(",")
+
+
+
+        for livro in self.Livros:
             print(livro.info())
 
         print()
@@ -108,6 +105,9 @@ class SistemaDeLivraria:
 
             case 7:
                 self.ValorTotalEstoque()
+
+            case 8:
+                self.CarregarEstoque()
 
             case 0:
                 print()
@@ -216,10 +216,9 @@ class SistemaDeLivraria:
                 categoria_encontrada = False
                 for livro in self.livros:
                     if pergunta_1_busca_por_categoria.lower() == livro.categoria.lower():
-                        categoria_encontrada = True        
+                        categoria_encontrada = True
                         print(livro.info())
-                        controle_iteracoes_busca_por_categoria+=1
-                        
+                        controle_iteracoes_busca_por_categoria += 1
 
                 if not categoria_encontrada:
                     print()
@@ -265,7 +264,7 @@ class SistemaDeLivraria:
                         preco_encontrado = True
                         print()
                         print(livro.info())
-                        controle_de_iteracoes_busca_por_preco+=1
+                        controle_de_iteracoes_busca_por_preco += 1
 
                 if preco_encontrado == False:
                     print()
@@ -312,7 +311,7 @@ class SistemaDeLivraria:
                     if livro.quantidade_em_estoque <= pergunta_1_busca_por_estoque:
                         quantidade_em_estoque_encontrada = True
                         print(livro.info())
-                        controle_de_iteracoes_busca_por_estoque+=1
+                        controle_de_iteracoes_busca_por_estoque += 1
 
                 if quantidade_em_estoque_encontrada == False:
                     print()
@@ -365,8 +364,6 @@ class SistemaDeLivraria:
                         print(livro.info())
                         controle_de_iteracoes_busca_por_valor_de_estoque += 1
 
-                    
-
                 if valor_encontrado == False:
                     print()
                     print("VALOR ESTIMADO INEXISTENTE!")
@@ -383,7 +380,8 @@ class SistemaDeLivraria:
                     print()
                     print(18 * "-=")
                     print(f"Valor informado : {pergunta_busca_por_valor_de_estoque}")
-                    print(f"Total de livros com valor estimado em estoque: {controle_de_iteracoes_busca_por_valor_de_estoque}")
+                    print(
+                        f"Total de livros com valor estimado em estoque: {controle_de_iteracoes_busca_por_valor_de_estoque}")
                     print()
                     pergunta_4_busca_por_valor_de_estoque = input("Gostaria de solicitar uma nova busca (s/n)? ")
 
@@ -393,6 +391,43 @@ class SistemaDeLivraria:
             else:
                 if pergunta_2_busca_por_valor_de_estoque == 0:
                     self.ExibirMenuInterativo()
+
+    def CarregarEstoque():
+
+# O cliente deseja que seja implementada uma funcionalidade para
+# carregar os livros cadastrados através de um arquivo txt (nova opção 8 - carregar
+# estoque). Quando indagado sobre como as informações serão postas no arquivo eles
+# passaram o seguinte exemplo:
+#   3426,compiladores,2012,computação,pearson,R$135.50,50
+#   2631,sistemas digitais,2017,computação,liber,R$99.90,30
+#   9680,senhor dos aneis: a sociedade do anel,2005,fantasia,harper,R$35.00,120
+
+# ou seja o formato pode ser visto como:
+
+#   <codigo>,<titulo>,<ano>,<área/gênero>,<editora>,R$<valor>,<qtd em estoque>
+
+
+
+
+
+
+#OU SEJA:
+
+# OS LIVROS NÃO SERÃO MAIS ARMAZENADOS EM UMA LISTA DENTRO DA CLASSE, E SIM DENTRO DO ARQUIVO txt.
+#
+
+
+
+
+
+
+
+
+
+
+
+
+        pass
 
 
 if __name__ == '__main__':
