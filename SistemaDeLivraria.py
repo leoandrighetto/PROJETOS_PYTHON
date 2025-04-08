@@ -415,20 +415,7 @@ class SistemaDeLivraria:
 
 # OS LIVROS NÃO SERÃO MAIS ARMAZENADOS EM UMA LISTA DENTRO DA CLASSE, E SIM DENTRO DO ARQUIVO txt.
 #
-
-
-
-
-
-
-
-
-
-
-
-
         pass
-
-
+        
 if __name__ == '__main__':
     SistemaDeLivraria().ExibirMenuInterativo()
