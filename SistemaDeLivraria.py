@@ -13,6 +13,9 @@ class Livro:
         self.quantidade_em_estoque = quantidade_em_estoque
 
     def info(self):
+
+        total_estoque = self.valor * self.quantidade_em_estoque
+
         print()
         return (f">>>CÓDIGO: {self.codigo}\n"
                 f"Título/Editora: {self.titulo}/{self.editora}\n"
@@ -20,101 +23,108 @@ class Livro:
                 f"Ano: {self.ano}\n"
                 f"Valor: R$ {self.valor}\n"
                 f"Estoque: {self.quantidade_em_estoque} unidades\n"
-                f"Valor em Estoque: R$ {self.valor * self.quantidade_em_estoque}")
+                f"Valor Total em Estoque: R$ {total_estoque:.2f}")
 
 
 class SistemaDeLivraria:
 
     def __init__(self):
 
-        self.livros = [
-            Livro("001", "O Grande Gatsby", "F. Scott Fitzgerald", "Romance", 1925, 45.0, 80),
-            Livro("002", "1984", "George Orwell", "Distopia", 1949, 55.5, 100),
-            Livro("003", "Sapiens", "Yuval Noah Harari", "História", 2011, 60.0, 120),
-            Livro("004", "A Guerra dos Tronos", "George R. R. Martin", "Fantasia", 1996, 90.0, 70),
-            Livro("005", "O Pequeno Príncipe", "Antoine de Saint-Exupéry", "Infantil", 1943, 40.0, 150),
-            Livro("006", "A Origem das Espécies", "Charles Darwin", "Ciência", 1859, 85.0, 200),
-            Livro("007", "A Arte da Guerra", "Sun Tzu", "Estratégia", -500, 50.0, 90),
-            Livro("008", "O Diário de Anne Frank", "Anne Frank", "Biografia", 1947, 35.0, 110),
-            Livro("009", "O Alquimista", "Paulo Coelho", "Ficção", 1988, 45.0, 140),
-            Livro("010", "O Senhor dos Anéis: A Sociedade do Anel", "J.R.R. Tolkien", "Fantasia", 1954, 80.0, 130),
-            Livro("011", "O Caçador de Pipas", "Khaled Hosseini", "Drama", 2003, 60.0, 100),
-            Livro("012", "O Nome da Rosa", "Umberto Eco", "Mistério", 1980, 70.0, 150),
-            Livro("013", "Crime e Castigo", "Fiódor Dostoiévski", "Filosofia", 1866, 95.0, 90),
-            Livro("014", "O Mundo de Sofia", "Jostein Gaarder", "Filosofia", 1991, 65.0, 110),
-            Livro("015", "A Menina que Roubava Livros", "Markus Zusak", "Drama", 2005, 75.0, 130),
-            Livro("016", "O Senhor dos Anéis: As Duas Torres", "J.R.R. Tolkien", "Fantasia", 1954, 85.0, 150),
-            Livro("017", "O Guia do Mochileiro das Galáxias", "Douglas Adams", "Ficção", 1979, 72.5, 180),
-            Livro("018", "A Revolução dos Bichos", "George Orwell", "Distopia", 1945, 40.0, 200),
-            Livro("019", "O Hobbit", "J.R.R. Tolkien", "Ficção", 1937, 50.0, 90),
-            Livro("020", "O Sol é para Todos", "Harper Lee", "Drama", 1960, 60.0, 100)
-        ]  # 0              1              2             3      4     5     6
+        self.livros = []
 
     def MostrarInfo(self):  # OPÇÃO 2 - MENU INTERATIVO
 
-        for livro in self.livros:
-            print(livro.info())
+        if self.livros:
+
+            for livro in self.livros:
+                print(livro.info())
+        else:
+            print()
+            print('NÃO HÁ LIVROS EM PROCESSO DE CADASTRO!')
 
         print()
         print(5 * "-=")
-        print("RESPONDA COM S / N:")
 
-        pergunta_MostrarInfo = input('DESEJA CADASTRAR MAIS LIVROS? ')
+        while True:
+            print()
+            print("RESPONDA COM S / N:")
+            pergunta_MostrarInfo = input('DESEJA CADASTRAR MAIS LIVROS? ')
 
-        # opcao_escolhida_info = self
+            if pergunta_MostrarInfo.lower() == "s":
+                self.CadastrarNovoLivro()
+                break
 
-        if pergunta_MostrarInfo.lower() == "s":
-            self.CadastrarNovoLivro()
-        else:
-            self.ExibirMenuInterativo()
+            elif pergunta_MostrarInfo.lower() == "n":
+                self.ExibirMenuInterativo()
+                break
+
+            else:
+                print()
+                print('ENTRADA INVÁLIDA, digite apenas S para Sim e N para n!')
 
     def ExibirMenuInterativo(self):
         print(18 * "-=")
         print(18 * "-=")
         print("        --MENU PRINCIPAL--")
         print()
-        print("> 1. CADASTRAR NOVO LIVRO")
-        print("> 2. LISTAR LIVROS")
-        print("> 3. BUSCAR LIVROS POR NOME")
-        print("> 4. BUSCAR LIVROS POR CATEGORIA")
-        print("> 5. BUSCAR LIVROS POR PREÇO")
-        print("> 6. BUSCA POR QUANTIDADE EM ESTOQUE")
-        print("> 7. VALOR TOTAL NO ESTOQUE")
-        print("> 0. ENCERRAR ATIVIDADES")
+        print("> 1. Cadastrar novo livro")
+        print("> 2. Listar livros em cadastro")
+        print("> 3. Buscar livros por nome")
+        print("> 4. Buscar livros por categoria")
+        print("> 5. Buscar livros por preço")
+        print("> 6. Busca por quantidade em estoque")
+        print("> 7. Valor total no estoque")
+        print("> 8. Carregar estoque")
+        print("> 9. Atualizar arquivo de estoque")
+        print("> 0. Encerrar atividades")
         print()
         print(18 * "-=")
 
-        pergunta_menu_interativo = int(input("Digite a opção desejada >>> "))
+        while True:
 
-        match pergunta_menu_interativo:
-
-            case 1:
-                self.CadastrarNovoLivro()
-
-            case 2:
-                self.MostrarInfo()
-
-            case 3:
-                self.BuscarPorNome()
-
-            case 4:
-                self.BuscarPorCategoria()
-
-            case 5:
-                self.BuscarPorPreco()
-
-            case 6:
-                self.BuscarPorQuantidadeEmEstoque()
-
-            case 7:
-                self.ValorTotalEstoque()
-
-            case 0:
+            try:
                 print()
-                print(18 * "-=")
+                pergunta_menu_interativo = int(input("Digite a opção desejada >>> "))
+
+                match pergunta_menu_interativo:
+
+                    case 1:
+                        self.CadastrarNovoLivro()
+
+                    case 2:
+                        self.MostrarInfo()
+
+                    case 3:
+                        self.BuscarPorNome()
+
+                    case 4:
+                        self.BuscarPorCategoria()
+
+                    case 5:
+                        self.BuscarPorPreco()
+
+                    case 6:
+                        self.BuscarPorQuantidadeEmEstoque()
+
+                    case 7:
+                        self.ValorTotalEstoque()
+
+                    case 8:
+                        self.CarregarEstoque()
+
+                    case 9:
+                        self.AtualizarArquivo()
+
+                    case 0:
+                        self.EncerrarSistema()
+
+                    case _:
+                        print()
+                        print('OPÇÃO INVÁLIDA')
+
+            except ValueError:
                 print()
-                print('             OBRIGADO')
-                sys.exit()
+                print("OPÇÃO INVÁLIDA")
 
     def CadastrarNovoLivro(self):  # OPÇÃO 1 DO MENU INTERATIVO
         print()
@@ -124,22 +134,12 @@ class SistemaDeLivraria:
         while True:
 
             print()
-            # codigo = input(">> Código do livro: ")
-            # titulo = input(">> Título do livro: ")
-            # editora = input(">> Editora do livro: ")
-            # categoria = input(">> Categoria do livro: ")
-            # ano = int(input('>> Ano do livro: '))
-            # valor = int(input('>> Valor do livro: '))
-            # quantidade_em_estoque = int(input('>> Digite a quantidade em estoque do livro: '))
-            #
-            # self.livros.append(Livro(codigo, titulo, editora, categoria, ano, valor, quantidade_em_estoque))
-
             self.livros.append(Livro(input(">> Código do livro: "),
                                      input(">> Título do livro: "),
                                      input(">> Editora do livro: "),
                                      input(">> Categoria do livro: "),
                                      input(">> Ano do livro: "),
-                                     int(input('>> Valor do livro: ')),
+                                     float(input('>> Valor do livro: ')),
                                      int(input('>> Digite a quantidade em estoque do livro: '))))
 
             # INTERAÇÃO-#INTERAÇÃO-#INTERAÇÃO-#INTERAÇÃO
@@ -154,11 +154,21 @@ class SistemaDeLivraria:
             print("> 2. VOLTAR AO MENU PRINCIPAL")
             print()
 
-            pergunta_cadastro_novo_livro = int(input("Digite a opção desejada >>  "))
+            while True:
 
-            if pergunta_cadastro_novo_livro == 2:
-                self.ExibirMenuInterativo()
-                break
+                pergunta_cadastro_novo_livro = input("Digite a opção desejada >>  ")
+
+                if pergunta_cadastro_novo_livro == "1":
+                    break
+
+                elif pergunta_cadastro_novo_livro == "2":
+                    self.ExibirMenuInterativo()
+                    break
+
+                else:
+                    print()
+                    print('ENTRADA INVÁLIDA!')
+                    print()
 
     def BuscarPorNome(self):  # OPÇÃO 3 DO MENU INTERATIVO
         print()
@@ -180,23 +190,43 @@ class SistemaDeLivraria:
                 if not livro_encontrado:
                     print()
                     print("LIVRO NÃO ENCONTRADO!")
-                    print()
-                    print("> 1. Buscar novo livro")
-                    print("> 2. Voltar ao menu principal")
-                    print()
-                    pergunta_2_busca_por_nome = int(input("Digite a opção desejada >>> "))
+                    while True:
+                        print()
+                        print("> 1. Buscar novo livro")
+                        print("> 2. Voltar ao menu principal")
+                        print()
 
-                    if pergunta_2_busca_por_nome != 1:
-                        self.ExibirMenuInterativo()
+                        pergunta_2_busca_por_nome = input("Digite a opção desejada >>> ")
 
+                        if pergunta_2_busca_por_nome == "1":
+                            break
+
+                        elif pergunta_2_busca_por_nome == "2":
+                            self.ExibirMenuInterativo()
+                            break
+
+                        else:
+                            print()
+                            print('ENTRADA INVÁLIDA!')
+                            print()
 
                 else:
                     print(18 * "-=")
-                    print()
-                    pergunta_3_busca_por_nome = input("Gostaria de consultar outro livro (s/ n)? ")
+                    while True:
+                        print()
+                        pergunta_3_busca_por_nome = input("Gostaria de consultar outro livro (S/N)? ")
 
-                    if pergunta_3_busca_por_nome.lower() == "n":
-                        self.ExibirMenuInterativo()
+                        if pergunta_3_busca_por_nome.lower() == "s":
+                            break
+
+                        elif pergunta_3_busca_por_nome.lower() == "n":
+                            self.ExibirMenuInterativo()
+                            break
+
+                        else:
+                            print()
+                            print("ENTRADA INVÁLIDA")
+
 
             else:
                 self.ExibirMenuInterativo()
@@ -205,9 +235,9 @@ class SistemaDeLivraria:
         print()
         print(18 * "-=")
         print("   --BUSCAR LIVRO POR CATEGORIA--")
-        print()
 
         while True:
+            print()
             pergunta_1_busca_por_categoria = input("Digite o nome da categoria (ou 0 para sair): ")
 
             if pergunta_1_busca_por_categoria.lower() != "0":
@@ -216,31 +246,45 @@ class SistemaDeLivraria:
                 categoria_encontrada = False
                 for livro in self.livros:
                     if pergunta_1_busca_por_categoria.lower() == livro.categoria.lower():
-                        categoria_encontrada = True        
+                        categoria_encontrada = True
                         print(livro.info())
-                        controle_iteracoes_busca_por_categoria+=1
-                        
+                        controle_iteracoes_busca_por_categoria += 1
 
                 if not categoria_encontrada:
                     print()
                     print("CATEGORIA NÃO ENCONTRADA!")
-                    print()
-                    print("> 1. Buscar nova categoria")
-                    print("> 2. Voltar ao menu principal")
-                    print()
-                    pergunta_2_busca_por_categoria = int(input("Digite a opção desejada >>> "))
+                    while True:
+                        print()
+                        print("> 1. Buscar nova categoria")
+                        print("> 2. Voltar ao menu principal")
+                        print()
+                        pergunta_2_busca_por_categoria = input("Digite a opção desejada >>> ")
 
-                    if pergunta_2_busca_por_categoria != 1:
-                        self.ExibirMenuInterativo()
+                        if pergunta_2_busca_por_categoria == "1":
+                            break
 
+                        elif pergunta_2_busca_por_categoria == "2":
+                            self.ExibirMenuInterativo()
+                            break
+                        else:
+                            print('ENTRADA INVÁLIDA!')
 
                 else:
                     print(18 * "-=")
+
                     print()
                     print(f"Quantidade de livros por categoria encontrados: {controle_iteracoes_busca_por_categoria}")
-                    pergunta_3_busca_por_categoria = input("Gostaria de consultar outra categoria (s/n)? ")
-                    if pergunta_3_busca_por_categoria.lower() == "n":
-                        self.ExibirMenuInterativo()
+                    while True:
+                        pergunta_3_busca_por_categoria = input("Gostaria de consultar outra categoria (s/n)? ")
+                        if pergunta_3_busca_por_categoria.lower() == "s":
+                            break
+                        elif pergunta_3_busca_por_categoria.lower() == "n":
+                            self.ExibirMenuInterativo()
+                            break
+                        else:
+                            print()
+                            print('RESPOSTA INVÁLIDA')
+                            print()
 
             else:
                 if pergunta_1_busca_por_categoria == "0":
@@ -254,45 +298,67 @@ class SistemaDeLivraria:
 
         while True:
             print()
-            pergunta_1_busca_por_preco = float(input("Digite seu valor máximo (ou 0 para sair): "))
+            try:
+                pergunta_1_busca_por_preco = float(input("Digite seu valor máximo (Exemplo: 10.99 | ou digite 0 para sair): "))
 
-            if pergunta_1_busca_por_preco != 0:
+                if pergunta_1_busca_por_preco != 0:
 
-                preco_encontrado = False
-                controle_de_iteracoes_busca_por_preco = 0
-                for livro in self.livros:
-                    if livro.valor <= pergunta_1_busca_por_preco:
-                        preco_encontrado = True
+                    preco_encontrado = False
+                    controle_de_iteracoes_busca_por_preco = 0
+                    for livro in self.livros:
+                        if livro.valor <= pergunta_1_busca_por_preco:
+                            preco_encontrado = True
+                            print()
+                            print(livro.info())
+                            controle_de_iteracoes_busca_por_preco += 1
+
+                    if preco_encontrado == False:
                         print()
-                        print(livro.info())
-                        controle_de_iteracoes_busca_por_preco+=1
+                        print("PREÇO ESTIMADO INEXISTENTE!")
 
-                if preco_encontrado == False:
-                    print()
-                    print("PREÇO ESTIMADO INEXISTENTE!")
-                    print()
-                    print("> 1. Solicitar nova busca")
-                    print("> 2. Voltar ao menu principal")
-                    print()
-                    pergunta_2_busca_por_preco = int(input("Digite a opção desejada >>> "))
+                        while True:
+                            print()
+                            print("> 1. Solicitar nova busca")
+                            print("> 2. Voltar ao menu principal")
+                            print()
+                            pergunta_2_busca_por_preco = input("Digite a opção desejada >>> ")
 
-                    if pergunta_2_busca_por_preco != 1:
-                        self.ExibirMenuInterativo()
+                            if pergunta_2_busca_por_preco == "1":
+                                break
+                            elif pergunta_2_busca_por_preco == "2":
+                                self.ExibirMenuInterativo()
+                            else:
+                                print()
+                                peinr('OPÇÃO INVÁLIDA')
 
+                    else:
+                        print(18 * "-=")
+
+                        while True:
+                            print()
+                            print(f"Quantidade de livros com preço estimado: {controle_de_iteracoes_busca_por_preco}")
+                            print()
+                            pergunta_3_busca_por_preco = input("Gostaria de colicitar uma nova busca (s/n)? ")
+
+                            if pergunta_3_busca_por_preco.lower() == "s":
+                                break
+
+                            elif pergunta_3_busca_por_preco.lower() == 'n':
+                                self.ExibirMenuInterativo()
+                                break
+
+                            else:
+                                print()
+                                print('ENTRADA INVÁLIDA')
 
                 else:
-                    print(18 * "-=")
-                    print()
-                    print(f"Quantidade de livros com preço estimado: {controle_de_iteracoes_busca_por_preco}")
-                    print()
-                    pergunta_3_busca_por_preco = input("Gostaria de colicitar uma nova busca (s/n)? ")
-
-                    if pergunta_3_busca_por_preco.lower() == "n":
+                    if pergunta_1_busca_por_preco == 0:
                         self.ExibirMenuInterativo()
 
-            else:
-                if pergunta_1_busca_por_preco == 0:
-                    self.ExibirMenuInterativo()
+            except ValueError:
+                print()
+                print("ENTRADA INVÁLIDA")
+                print('Exemplo de Formato Correto para preços > 10.99')
 
     def BuscarPorQuantidadeEmEstoque(self):  # OPÇÃO 6 DO MENU INTERATIVO
         print()
@@ -302,46 +368,64 @@ class SistemaDeLivraria:
 
         while True:
             print()
-            pergunta_1_busca_por_estoque = int(input("Digite a quantidade desejada (ou 0 para sair): "))
+            try:
+                pergunta_1_busca_por_estoque = int(input("Digite a quantidade desejada (ou 0 para sair): "))
 
-            if pergunta_1_busca_por_estoque != 0:
+                if pergunta_1_busca_por_estoque != 0:
 
-                controle_de_iteracoes_busca_por_estoque = 0
-                quantidade_em_estoque_encontrada = False
-                for livro in self.livros:
-                    if livro.quantidade_em_estoque <= pergunta_1_busca_por_estoque:
-                        quantidade_em_estoque_encontrada = True
-                        print(livro.info())
-                        controle_de_iteracoes_busca_por_estoque+=1
+                    controle_de_iteracoes_busca_por_estoque = 0
+                    quantidade_em_estoque_encontrada = False
+                    for livro in self.livros:
+                        if livro.quantidade_em_estoque <= pergunta_1_busca_por_estoque:
+                            quantidade_em_estoque_encontrada = True
+                            print(livro.info())
+                            controle_de_iteracoes_busca_por_estoque += 1
 
-                if quantidade_em_estoque_encontrada == False:
-                    print()
-                    print("QUANTIDADE ESTIMADA INEXISTENTE!")
-                    print()
-                    print("> 1. Solicitar nova busca")
-                    print("> 2. Voltar ao menu principal")
-                    print()
-                    pergunta_2_busca_por_por_estoque = int(input("Digite a opção desejada >>> "))
+                    if quantidade_em_estoque_encontrada == False:
+                        print()
+                        print("QUANTIDADE ESTIMADA INEXISTENTE!")
+                        while True:
+                            print()
+                            print("> 1. Solicitar nova busca")
+                            print("> 2. Voltar ao menu principal")
+                            print()
+                            pergunta_2_busca_por_por_estoque = input("Digite a opção desejada >>> ")
 
-                    if pergunta_2_busca_por_por_estoque != 1:
-                        self.ExibirMenuInterativo()
+                            if pergunta_2_busca_por_por_estoque == "1":
+                                break
 
+                            elif pergunta_2_busca_por_por_estoque == "2":
+                                self.ExibirMenuInterativo()
+
+                            else:
+                                print()
+                                print('ENTRADA INVÁLIDA')
+
+                    else:
+                        print()
+                        print(18 * "-=")
+                        print(f"Quantidade informada: {pergunta_1_busca_por_estoque}")
+                        print(
+                            f"Total de livros com quantidade em estoque estimada: {controle_de_iteracoes_busca_por_estoque}")
+                        while True:
+                            print()
+                            pergunta_3_busca_por_estoque = input("Gostaria de solicitar uma nova busca (s/n)? ")
+
+                            if pergunta_3_busca_por_estoque.lower() == "s":
+                                break
+                            elif pergunta_3_busca_por_estoque.lower() == "n":
+                                self.ExibirMenuInterativo()
+                            else:
+                                print()
+                                print('ENTRADA INVÁLIDA')
 
                 else:
-                    print()
-                    print(18 * "-=")
-                    print(f"Quantidade informada: {pergunta_1_busca_por_estoque}")
-                    print(
-                        f"Total de livros com quantidade em estoque estimada: {controle_de_iteracoes_busca_por_estoque}")
-                    print()
-                    pergunta_3_busca_por_estoque = input("Gostaria de solicitar uma nova busca (s/n)? ")
-
-                    if pergunta_3_busca_por_estoque.lower() == "n":
+                    if pergunta_1_busca_por_estoque == 0:
                         self.ExibirMenuInterativo()
 
-            else:
-                if pergunta_1_busca_por_estoque == 0:
-                    self.ExibirMenuInterativo()
+            except ValueError:
+                print()
+                print('ENTRADA INVÁLIDA! DIGITE APENAS NÚMEROS')
 
     def ValorTotalEstoque(self):  # OPÇÃO 7 DO MENU INTERATIVO
         print()
@@ -350,50 +434,165 @@ class SistemaDeLivraria:
         print()
 
         while True:
-            print()
-            pergunta_busca_por_valor_de_estoque = int(input("Digite o valor mínimo procurado: (0 - SAIR): "))
 
-            if pergunta_busca_por_valor_de_estoque != 0:
+            try:
+                print()
+                pergunta_busca_por_valor_de_estoque = float(input("Digite seu valor mínimo (Exemplo: 10.99 | ou digite 0 para sair): "))
 
-                controle_de_iteracoes_busca_por_valor_de_estoque = 0
-                valor_encontrado = False
+                if pergunta_busca_por_valor_de_estoque != 0:
 
-                for livro in self.livros:
-                    valor_total = livro.quantidade_em_estoque * livro.valor
-                    if pergunta_busca_por_valor_de_estoque < valor_total:
-                        valor_encontrado = True
-                        print(livro.info())
-                        controle_de_iteracoes_busca_por_valor_de_estoque += 1
+                    controle_de_iteracoes_busca_por_valor_de_estoque = 0
+                    valor_encontrado = False
 
-                    
+                    for livro in self.livros:
+                        valor_total = livro.quantidade_em_estoque * livro.valor
+                        if pergunta_busca_por_valor_de_estoque < valor_total:
+                            valor_encontrado = True
+                            print(livro.info())
+                            controle_de_iteracoes_busca_por_valor_de_estoque += 1
 
-                if valor_encontrado == False:
-                    print()
-                    print("VALOR ESTIMADO INEXISTENTE!")
-                    print()
-                    print("> 1. Solicitar nova busca")
-                    print("> 2. Voltar ao menu principal")
-                    print()
-                    pergunta_3_busca_por_por_valor_de_estoque = int(input("Digite a opção desejada >>> "))
+                    if valor_encontrado == False:
+                        print()
+                        print("VALOR ESTIMADO INEXISTENTE!")
+                        while True:
+                            print()
+                            print("> 1. Solicitar nova busca")
+                            print("> 2. Voltar ao menu principal")
+                            print()
+                            pergunta_2_busca_por_por_valor_de_estoque = input("Digite a opção desejada >>> ")
 
-                    if pergunta_3_busca_por_por_valor_de_estoque != 1:
-                        self.ExibirMenuInterativo()
+                            if pergunta_2_busca_por_por_valor_de_estoque == "1":
+                                break
+
+                            elif pergunta_2_busca_por_por_valor_de_estoque == "2":
+                                self.ExibirMenuInterativo()
+
+                            else:
+                                print()
+                                print('ENTRADA INVÁLIDA')
+
+                    else:
+                        print()
+                        print(18 * "-=")
+                        print(f"Valor informado : {pergunta_busca_por_valor_de_estoque}")
+                        print(
+                            f"Total de livros com valor estimado em estoque: {controle_de_iteracoes_busca_por_valor_de_estoque}")
+                        while True:
+
+                            print()
+                            pergunta_3_busca_por_valor_de_estoque = input("Gostaria de solicitar uma nova busca (s/n)? ")
+
+                            if pergunta_3_busca_por_valor_de_estoque.lower() == "s":
+                                break
+                            elif pergunta_3_busca_por_valor_de_estoque.lower() == "n":
+                                self.ExibirMenuInterativo()
+                            else:
+                                print()
+                                print('ENTRADA INVÁLIDA')
 
                 else:
-                    print()
-                    print(18 * "-=")
-                    print(f"Valor informado : {pergunta_busca_por_valor_de_estoque}")
-                    print(f"Total de livros com valor estimado em estoque: {controle_de_iteracoes_busca_por_valor_de_estoque}")
-                    print()
-                    pergunta_4_busca_por_valor_de_estoque = input("Gostaria de solicitar uma nova busca (s/n)? ")
-
-                    if pergunta_4_busca_por_valor_de_estoque.lower() == "n":
+                    if pergunta_2_busca_por_valor_de_estoque == 0:
                         self.ExibirMenuInterativo()
+            except ValueError:
+                print()
+                print('ENTRADA INVÁLIDA')
+
+    def CarregarEstoque(self): #OPÇÃO 8
+
+        self.lista_de_livros = []
+
+        arquivo = open("BancoDeLivros.txt", "r", encoding="utf8")
+        linha_arquivo = arquivo.readline().replace("\n", "")
+        linha_editada = linha_arquivo.split(",")
+
+        while linha_arquivo:
+            nova_linha = Livro(linha_editada[0], linha_editada[1], linha_editada[2], linha_editada[3], linha_editada[4],
+                               float(linha_editada[5]),
+                               int(linha_editada[6]))
+
+            self.lista_de_livros.append(nova_linha)
+            linha_arquivo = arquivo.readline().replace("\n", "")
+            linha_editada = linha_arquivo.split(",")
+
+        for livro in self.lista_de_livros:
+            print(livro.info())
+
+        while True:
+            print()
+            pergunta_carregar_estoque = input('Digite "s" para retornar ao menu principal: ')
+            print()
+
+            if pergunta_carregar_estoque.lower() == "s":
+                self.ExibirMenuInterativo()
+                break
+            else:
+                print('Entrada inválida!')
+
+    def AtualizarArquivo(self): #OPÇÃO 9
+        print()
+        print("DESEJA ATUALIZAR O ESTOQUE?")
+
+        while True:
+            print()
+            pergunta_atualizar_arquivo_1 = input('RESPONDA (S/N): ')
+
+            if pergunta_atualizar_arquivo_1.lower() == "s":
+
+                with  open("BancoDeLivros.txt", "a", encoding="utf8") as arquivo:
+
+                    for livro in self.livros:
+                        linha = (f"{livro.codigo},{livro.titulo},{livro.ano},{livro.categoria}"
+                                 f",{livro.editora},{livro.valor},{livro.quantidade_em_estoque}\n")
+
+                        arquivo.write(linha)
+
+
+
+
+                print()
+                print('Estoque Atualizado!')
+                self.livros.clear()
+                print()
+                self.ExibirMenuInterativo()
+                break
+
+
+            elif pergunta_atualizar_arquivo_1.lower() == "n":
+                self.ExibirMenuInterativo()
 
             else:
-                if pergunta_2_busca_por_valor_de_estoque == 0:
-                    self.ExibirMenuInterativo()
+                print('ENTRADA INVÁLIDA!')
 
+    def EncerrarSistema(self): #OPÇÃO 0
+        print()
+        print("DESEJA ATUALIZAR O ESTOQUE?")
+
+        while True:
+            print()
+            pergunta_atualizar_arquivo_1 = input('RESPONDA (S/N): ')
+
+            if pergunta_atualizar_arquivo_1.lower() == "s":
+
+                with  open("BancoDeLivros.txt", "a", encoding="utf8") as arquivo:
+
+                    for livro in self.livros:
+                        linha = (f"\n{livro.codigo},{livro.titulo},{livro.ano},{livro.categoria}"
+                                 f",{livro.editora},{livro.valor},{livro.quantidade_em_estoque}")
+
+                        arquivo.write(linha)
+
+                print()
+                print('Estoque Atualizado! Obrigado e volte sempre!')
+                sys.exit()
+
+            elif pergunta_atualizar_arquivo_1.lower() == "n":
+                print()
+                print("Obrigado e volte sempre!")
+                sys.exit()
+
+            else:
+                print('ENTRADA INVÁLIDA!')
+()
 
 if __name__ == '__main__':
     SistemaDeLivraria().ExibirMenuInterativo()
