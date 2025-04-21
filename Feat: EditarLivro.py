@@ -592,7 +592,54 @@ class SistemaDeLivraria:
 
             else:
                 print('ENTRADA INVÁLIDA!')
-()
+
+    def EditarLivro(self):
+        pass
+        print()
+
+        codigo_solicitado = input('Digite o código do livro: ')
+
+        while True:
+            print()
+            pergunta_solitacao = input('Qual parâmetro você gostaria de editar? ')
+
+            if pergunta_solitacao.lower() == "codigo":
+                print()
+                alterar_codigo = input("Digite o novo código do livro: ")
+                print()
+
+            elif pergunta_solitacao.lower() == "titulo":
+                print()
+                alterar_codigo = input("Digite o novo titulo do livro: ")
+                print()
+
+            elif pergunta_solitacao.lower() == "ano":
+                print()
+                alterar_codigo = input("Digite o novo ano do livro: ")
+                print()
+
+            elif pergunta_solitacao.lower() == "categoria":
+                print()
+                alterar_codigo = input("Digite a nova categoria do livro: ")
+                print()
+
+            elif pergunta_solitacao.lower() == "editora":
+                print()
+                alterar_codigo = input("Digite a nova editora do livro: ")
+                print()
+
+            elif pergunta_solitacao.lower() == "valor":
+                print()
+                alterar_codigo = input("Digite o novo valor do livro: ")
+                print()
+
+            elif pergunta_solitacao.lower() == "quantidade em estoque":
+                print()
+                alterar_codigo = input("Digite a nova quantidade em estoque: ")
+                print()
+
+            else:
+                print('Entrada inválida')
 
 if __name__ == '__main__':
     SistemaDeLivraria().ExibirMenuInterativo()
