@@ -541,8 +541,8 @@ class SistemaDeLivraria:
                 with  open("BancoDeLivros.txt", "a", encoding="utf8") as arquivo:
 
                     for livro in self.livros:
-                        linha = (f"{livro.codigo},{livro.titulo},{livro.ano},{livro.categoria}"
-                                 f",{livro.editora},{livro.valor},{livro.quantidade_em_estoque}\n")
+                        linha = (f"{livro.codigo},{livro.titulo},{livro.editora},{livro.categoria},{livro.ano}"
+                                 f",{livro.valor},{livro.quantidade_em_estoque}\n")
 
                         arquivo.write(linha)
 
@@ -592,7 +592,6 @@ class SistemaDeLivraria:
 
             else:
                 print('ENTRADA INVÁLIDA!')
-()
 
 if __name__ == '__main__':
     SistemaDeLivraria().ExibirMenuInterativo()
