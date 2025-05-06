@@ -499,10 +499,8 @@ class SistemaDeLivraria:
 
     def CarregarEstoque(self): #OPÇÃO 8
 
-        self.lista_de_livros = []
-
         arquivo = open("BancoDeLivros.txt", "r", encoding="utf8")
-        linha_arquivo = arquivo.readline().replace("\n", "")
+        linha_arquivo = arquivo.readline().replace("\n", "").replace("R$","")
         linha_editada = linha_arquivo.split(",")
 
         while linha_arquivo:
@@ -510,25 +508,20 @@ class SistemaDeLivraria:
                                float(linha_editada[5]),
                                int(linha_editada[6]))
 
-            self.lista_de_livros.append(nova_linha)
+            self.livros.append(nova_linha)
             linha_arquivo = arquivo.readline().replace("\n", "")
             linha_editada = linha_arquivo.split(",")
 
-        for livro in self.lista_de_livros:
-            print(livro.info())
+        print()
+        print('Estoque Carregado!')
+        print()
 
-        while True:
-            print()
-            pergunta_carregar_estoque = input('Digite "s" para retornar ao menu principal: ')
-            print()
-
-            if pergunta_carregar_estoque.lower() == "s":
-                self.ExibirMenuInterativo()
-                break
-            else:
-                print('Entrada inválida!')
+        self.ExibirMenuInterativo()
 
     def AtualizarArquivo(self): #OPÇÃO 9
+        with open("BancoDeLivros.txt","w") as limpar:
+            limpar.write("")
+
         print()
         print("DESEJA ATUALIZAR O ESTOQUE?")
 
@@ -542,12 +535,9 @@ class SistemaDeLivraria:
 
                     for livro in self.livros:
                         linha = (f"{livro.codigo},{livro.titulo},{livro.editora},{livro.categoria},{livro.ano}"
-                                 f",{livro.valor},{livro.quantidade_em_estoque}\n")
+                                 f",R${livro.valor},{livro.quantidade_em_estoque}\n")
 
                         arquivo.write(linha)
-
-
-
 
                 print()
                 print('Estoque Atualizado!')
