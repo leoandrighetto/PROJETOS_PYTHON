@@ -13,7 +13,6 @@ class Livro:
         self.quantidade_em_estoque = quantidade_em_estoque
 
     def info(self):
-
         total_estoque = self.valor * self.quantidade_em_estoque
 
         print()
@@ -299,7 +298,8 @@ class SistemaDeLivraria:
         while True:
             print()
             try:
-                pergunta_1_busca_por_preco = float(input("Digite seu valor máximo (Exemplo: 10.99 | ou digite 0 para sair): "))
+                pergunta_1_busca_por_preco = float(
+                    input("Digite seu valor máximo (Exemplo: 10.99 | ou digite 0 para sair): "))
 
                 if pergunta_1_busca_por_preco != 0:
 
@@ -437,7 +437,8 @@ class SistemaDeLivraria:
 
             try:
                 print()
-                pergunta_busca_por_valor_de_estoque = float(input("Digite seu valor mínimo (Exemplo: 10.99 | ou digite 0 para sair): "))
+                pergunta_busca_por_valor_de_estoque = float(
+                    input("Digite seu valor mínimo (Exemplo: 10.99 | ou digite 0 para sair): "))
 
                 if pergunta_busca_por_valor_de_estoque != 0:
 
@@ -480,7 +481,8 @@ class SistemaDeLivraria:
                         while True:
 
                             print()
-                            pergunta_3_busca_por_valor_de_estoque = input("Gostaria de solicitar uma nova busca (s/n)? ")
+                            pergunta_3_busca_por_valor_de_estoque = input(
+                                "Gostaria de solicitar uma nova busca (s/n)? ")
 
                             if pergunta_3_busca_por_valor_de_estoque.lower() == "s":
                                 break
@@ -497,45 +499,45 @@ class SistemaDeLivraria:
                 print()
                 print('ENTRADA INVÁLIDA')
 
-    def CarregarEstoque(self): #OPÇÃO 8
+    def CarregarEstoque(self):  # OPÇÃO 8
 
         arquivo = open("BancoDeLivros.txt", "r", encoding="utf8")
-        linha_arquivo = arquivo.readline().replace("\n", "").replace("R$","")
-        linha_editada = linha_arquivo.split(",")
 
-        while linha_arquivo:
-            nova_linha = Livro(linha_editada[0], linha_editada[1], linha_editada[2], linha_editada[3], linha_editada[4],
-                               float(linha_editada[5]),
-                               int(linha_editada[6]))
+        linha = arquivo.readline().replace("\n", "")
 
-            self.livros.append(nova_linha)
-            linha_arquivo = arquivo.readline().replace("\n", "")
-            linha_editada = linha_arquivo.split(",")
+        while linha:
+            linha_editada = linha.split(",")
+
+            linha_editada[5] = linha_editada[5].replace("R$", "")
+            linha_editada[5] = float(linha_editada[5])
+            linha_editada[6] = int(linha_editada[6])
+
+            novo_livro = Livro(linha_editada[0], linha_editada[1], linha_editada[2], linha_editada[3], linha_editada[4],
+                               linha_editada[5], linha_editada[6])
+
+            self.livros.append(novo_livro)
+
+            linha = arquivo.readline().replace("\n", "")
 
         print()
-        print('Estoque Carregado!')
+        print("ESTOQUE CARREGADO!")
         print()
 
         self.ExibirMenuInterativo()
 
-    def AtualizarArquivo(self): #OPÇÃO 9
-        with open("BancoDeLivros.txt","w") as limpar:
-            limpar.write("")
-
-        print()
-        print("DESEJA ATUALIZAR O ESTOQUE?")
+    def AtualizarArquivo(self):  # OPÇÃO 9
 
         while True:
             print()
-            pergunta_atualizar_arquivo_1 = input('RESPONDA (S/N): ')
+            pergunta_atualizar_arquivo_1 = input('DESEJA ATUALIZAR O ESTOQUE? (S/N): ')
 
             if pergunta_atualizar_arquivo_1.lower() == "s":
 
-                with  open("BancoDeLivros.txt", "a", encoding="utf8") as arquivo:
+                with  open("BancoDeLivros.txt", "w", encoding="UTF8") as arquivo:
 
                     for livro in self.livros:
-                        linha = (f"{livro.codigo},{livro.titulo},{livro.editora},{livro.categoria},{livro.ano}"
-                                 f",R${livro.valor},{livro.quantidade_em_estoque}\n")
+                        linha = (f"{livro.codigo},{livro.titulo},{livro.editora},{livro.categoria}"
+                                 f",{livro.ano},R${livro.valor},{livro.quantidade_em_estoque}\n")
 
                         arquivo.write(linha)
 
@@ -553,7 +555,7 @@ class SistemaDeLivraria:
             else:
                 print('ENTRADA INVÁLIDA!')
 
-    def EncerrarSistema(self): #OPÇÃO 0
+    def EncerrarSistema(self):  # OPÇÃO 0
         print()
         print("DESEJA ATUALIZAR O ESTOQUE?")
 
@@ -563,11 +565,11 @@ class SistemaDeLivraria:
 
             if pergunta_atualizar_arquivo_1.lower() == "s":
 
-                with  open("BancoDeLivros.txt", "a", encoding="utf8") as arquivo:
+                with  open("BancoDeLivros.txt", "w", encoding="utf8") as arquivo:
 
                     for livro in self.livros:
-                        linha = (f"\n{livro.codigo},{livro.titulo},{livro.ano},{livro.categoria}"
-                                 f",{livro.editora},{livro.valor},{livro.quantidade_em_estoque}")
+                        linha = (f"\n{livro.codigo},{livro.titulo},{livro.editora},{livro.categoria}"
+                                 f",{livro.ano},{livro.valor},{livro.quantidade_em_estoque}")
 
                         arquivo.write(linha)
 
@@ -582,6 +584,7 @@ class SistemaDeLivraria:
 
             else:
                 print('ENTRADA INVÁLIDA!')
+
 
 if __name__ == '__main__':
     SistemaDeLivraria().ExibirMenuInterativo()
