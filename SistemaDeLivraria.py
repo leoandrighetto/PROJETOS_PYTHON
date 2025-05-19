@@ -41,6 +41,50 @@ class SistemaDeLivraria:
         self.filiais = []
         self.estoque_filiais = {}
 
+    def MostrarInfo(self):  # OPÇÃO 2 - MENU INTERATIVO
+
+        filial_atual = None
+
+        for registro in self.filiais:  # ACESSANDO A LISTA DE FILIAIS
+            print()
+            print(f'Filial: {registro.nome_filial} | Código: {registro.codigo_filial}')
+            print()
+            filial_atual = registro.nome_filial
+
+            for filial, lista in self.estoque_filiais.items():
+                if filial_atual == filial:
+
+                    for livro in lista:
+                        self.InfoEstoqueFiliais(livro)
+
+        while True:
+            print()
+            print("RESPONDA COM S / N:")
+            pergunta_MostrarInfo = input('DESEJA CADASTRAR MAIS LIVROS? ')
+
+            if pergunta_MostrarInfo.lower() == "s":
+                self.CadastrarNovoLivro()
+                break
+
+            elif pergunta_MostrarInfo.lower() == "n":
+                self.ExibirMenuInterativo()
+                break
+
+            else:
+                print()
+                print('ENTRADA INVÁLIDA, digite apenas S para Sim e N para n!')
+
+    def InfoEstoqueFiliais(self,livro):
+
+        print()
+        print(f">>>CÓDIGO: {livro.codigo}\n"
+              f"Título/Editora: {livro.titulo}/{livro.editora}\n"
+              f"Categoria: {livro.categoria}\n"
+              f"Ano: {livro.ano}\n"
+              f"Valor: R$ {livro.valor}\n"
+              f"Estoque: {livro.quantidade_em_estoque} unidades\n"
+              f"Valor total em estoque: R${livro.quantidade_em_estoque * livro.valor:.2f}\n")
+
     def ExibirMenuInterativo(self):
         print(18 * "-=")
         print(18 * "-=")
@@ -116,45 +160,6 @@ class SistemaDeLivraria:
             except ValueError:
                 print()
                 print("OPÇÃO INVÁLIDA")
-
-    def MostrarInfo(self):  # OPÇÃO 2 - MENU INTERATIVO
-
-        filial_atual = None
-
-        for registro in self.filiais:  # ACESSANDO A LISTA DE FILIAIS
-            print()
-            print(f'Filial: {registro.nome_filial} | Código: {registro.codigo_filial}')
-            print()
-            filial_atual = registro.nome_filial
-
-            for filial, lista in self.estoque_filiais.items():
-                if filial_atual == filial:
-
-                    for livro in lista:
-                        print(f">>>CÓDIGO: {livro.codigo}\n"
-                        f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                        f"Categoria: {livro.categoria}\n"
-                        f"Ano: {livro.ano}\n"
-                        f"Valor: R$ {livro.valor}\n"
-                        f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                        f"Valor total em estoque: R${livro.quantidade_em_estoque * livro.valor:.2f}\n")
-
-        while True:
-            print()
-            print("RESPONDA COM S / N:")
-            pergunta_MostrarInfo = input('DESEJA CADASTRAR MAIS LIVROS? ')
-
-            if pergunta_MostrarInfo.lower() == "s":
-                self.CadastrarNovoLivro()
-                break
-
-            elif pergunta_MostrarInfo.lower() == "n":
-                self.ExibirMenuInterativo()
-                break
-
-            else:
-                print()
-                print('ENTRADA INVÁLIDA, digite apenas S para Sim e N para n!')
 
     def CadastrarNovoLivro(self):  # OPÇÃO 1 DO MENU INTERATIVO
         print()
@@ -260,14 +265,7 @@ class SistemaDeLivraria:
                         for livro in lista_livros:
                             if livro.titulo.lower() == pergunta_2_busca_por_nome.lower():
                                 livro_encontrado = True
-
-                                print(f">>>CÓDIGO: {livro.codigo}\n"
-                                      f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                                      f"Categoria: {livro.categoria}\n"
-                                      f"Ano: {livro.ano}\n"
-                                      f"Valor: R$ {livro.valor}\n"
-                                      f"Estoque: {livro.quantidade_em_estoque} unidades"
-                                      f"Valor total em estoque: R${livro.quantidade_em_estoque * livro.valor:.2f}\n")
+                                self.InfoEstoqueFiliais(livro)
 
                 if not livro_encontrado:
                     print()
@@ -344,13 +342,7 @@ class SistemaDeLivraria:
                             if livro.categoria.lower() == pergunta_2_busca_por_categoria.lower():
                                 livro_encontrado = True
 
-                                print(f">>>CÓDIGO: {livro.codigo}\n"
-                                      f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                                      f"Categoria: {livro.categoria}\n"
-                                      f"Ano: {livro.ano}\n"
-                                      f"Valor: R$ {livro.valor}\n"
-                                      f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                                      f"Valor total em estoque: R${livro.quantidade_em_estoque * livro.valor:.2f}\n")
+                                self.InfoEstoqueFiliais(livro)
 
                 if not livro_encontrado:
                     print()
@@ -429,14 +421,7 @@ class SistemaDeLivraria:
                             for livro in lista_livros:
                                 if livro.valor <= pergunta_2_busca_por_preco:
                                     livro_encontrado = True
-                                    print()
-                                    print(f">>>CÓDIGO: {livro.codigo}\n"
-                                          f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                                          f"Categoria: {livro.categoria}\n"
-                                          f"Ano: {livro.ano}\n"
-                                          f"Valor: R$ {livro.valor}\n"
-                                          f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                                          f"Valor total em estoque: R${livro.quantidade_em_estoque * livro.valor:.2f}")
+                                    self.InfoEstoqueFiliais(livro)
 
                     if not livro_encontrado:
                         print()
@@ -522,14 +507,7 @@ class SistemaDeLivraria:
                             for livro in lista_livros:
                                 if livro.quantidade_em_estoque >= pergunta_2_busca_por_quantidade :
                                     livro_encontrado = True
-                                    print()
-                                    print(f">>>CÓDIGO: {livro.codigo}\n"
-                                          f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                                          f"Categoria: {livro.categoria}\n"
-                                          f"Ano: {livro.ano}\n"
-                                          f"Valor: R$ {livro.valor}\n"
-                                          f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                                          f"Valor total em estoque: R${livro.quantidade_em_estoque * livro.valor:.2f}")
+                                    self.InfoEstoqueFiliais(livro)
 
                     if not livro_encontrado:
                         print()
@@ -617,13 +595,7 @@ class SistemaDeLivraria:
                                 if valor_total_estoque >= pergunta_2_busca_por_valor_de_estoque:
                                     livro_encontrado = True
                                     print()
-                                    print(f">>>CÓDIGO: {livro.codigo}\n"
-                                          f"Título/Editora: {livro.titulo}/{livro.editora}\n"
-                                          f"Categoria: {livro.categoria}\n"
-                                          f"Ano: {livro.ano}\n"
-                                          f"Valor: R$ {livro.valor}\n"
-                                          f"Estoque: {livro.quantidade_em_estoque} unidades\n"
-                                          f"Valor total em estoque: R${valor_total_estoque:.2f}")
+                                    self.InfoEstoqueFiliais(livro)
 
                     if not livro_encontrado:
                         print()
@@ -790,7 +762,7 @@ class SistemaDeLivraria:
 
             print()
             while True:
-                codigo_filial = input("Código da Filial (Ex: #FL01): ")
+                codigo_filial = input("Código da Filial (Ex: 09): ")
                 nome_filial = input("Nome da Filial: ")
                 endereco = input("Endereço da Filial: ")
                 contato = input("Contato da Filial: ")
@@ -815,11 +787,11 @@ class SistemaDeLivraria:
 
         while True:
 
+            valor_total_estoque_filial = 0
+
             print()
             pergunta_1_listagem_estoque = input('Digite o nome da Filial: ')
             print()
-
-            valor_total_estoque_filial = 0
 
             filial_encontrada = False
 
@@ -830,6 +802,8 @@ class SistemaDeLivraria:
                     filial_encontrada = True
                     print(f'Filial {filial} |')
                     for livro in lista_livros:
+                        total_estoque = livro.quantidade_em_estoque * livro.valor
+                        print()
                         print(f">>>CÓDIGO: {livro.codigo}\n"
                     f"Título/Editora: {livro.titulo}/{livro.editora}\n"
                     f"Categoria: {livro.categoria}\n"
@@ -837,9 +811,8 @@ class SistemaDeLivraria:
                     f"Valor: R$ {livro.valor}\n"
                     f"Estoque: {livro.quantidade_em_estoque} unidades")
 
-                        valor_total_estoque_filial += (livro.quantidade_em_estoque + livro.valor)
-                    print()
-                    print(f'Valor total em estoque da filial: R${valor_total_estoque_filial:.2f}\n')
+                        valor_total_estoque_filial += total_estoque
+
 
 
             if not filial_encontrada:
@@ -862,6 +835,8 @@ class SistemaDeLivraria:
             else:
                 while True:
 
+                    print()
+                    print(f'Valor total em estoque da filial: R${valor_total_estoque_filial:.2f}\n')
                     print()
                     pergunta_3_listagem_estoque = input('Gostaria de pesquisar outra filial (S/N)? ')
                     print()
