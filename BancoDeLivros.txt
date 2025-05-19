@@ -1,0 +1,23 @@
+#FL01,Barra Sul,Diário de Noticias 80,3221-6369
+3426,compiladores,2012,computação,pearson,R$100.5,500
+2631,sistemas digitais,2017,computação,liber,R$99.9,30
+9680,senhor dos aneis: a sociedade do anel,2005,fantasia,harper,R$35.0,120
+
+#FL02,Centro,Av. Brasil 500,3244-9988
+3426,compiladores,2012,computação,pearson,R$140.0,12
+1045,engenharia de software,2020,computação,mcgraw-hill,R$145.0,40
+2077,clean code,2008,programação,prentice hall,R$89.9,25
+3002,hobbit,2001,fantasia,harpercollins,R$42.0,80
+
+#FL03,Norte Shopping,Rua das Laranjeiras 245,3333-1212
+3426,compiladores,2012,computação,pearson,R$44.89,4
+9001,algoritmos e estruturas de dados,2015,computação,novatec,R$120.0,60
+8111,o pequeno príncipe,1943,infantil,gallimard,R$29.9,50
+4555,cem anos de solidão,1967,realismo mágico,alfaguara,R$49.9,20
+
+#FL04,Campus Universitário,Rodovia SC-401,3232-8899
+3426,compiladores,2012,computação,pearson,R$32.1,123
+3001,inteligência artificial,2019,computação,campus,R$159.0,35
+4444,dom casmurro,1899,romance,globo,R$19.9,70
+5555,neuromancer,1984,ficção científica,rocco,R$58.0,45
+
