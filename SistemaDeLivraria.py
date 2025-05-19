@@ -1,5 +1,3 @@
-from nt import write
-
 import sys
 
 class Livro:
@@ -411,7 +409,7 @@ class SistemaDeLivraria:
 
                 try:
                     pergunta_2_busca_por_preco = float(
-                        input("Digite seu valor máximo (Exemplo: 10.99 | ou digite 0 para sair): "))
+                        input("Digite o valor desejado > (Exemplo: 10.99 | ou digite 0 para sair): "))
 
                     controle_nome_filial = None
 
@@ -429,7 +427,7 @@ class SistemaDeLivraria:
                             filial_encontrada = True
 
                             for livro in lista_livros:
-                                if pergunta_2_busca_por_preco <= livro.valor:
+                                if livro.valor <= pergunta_2_busca_por_preco:
                                     livro_encontrado = True
                                     print()
                                     print(f">>>CÓDIGO: {livro.codigo}\n"
@@ -522,7 +520,7 @@ class SistemaDeLivraria:
                             filial_encontrada = True
 
                             for livro in lista_livros:
-                                if livro.quantidade_em_estoque <= pergunta_2_busca_por_quantidade :
+                                if livro.quantidade_em_estoque >= pergunta_2_busca_por_quantidade :
                                     livro_encontrado = True
                                     print()
                                     print(f">>>CÓDIGO: {livro.codigo}\n"
@@ -701,8 +699,9 @@ class SistemaDeLivraria:
             if linha_editada[0].strip().startswith("#"):
 
                 nome_filial_atual = linha_editada[1]
+                codigo_filial = linha_editada[0][3:]
 
-                self.filiais.append (Filial(linha_editada[0],
+                self.filiais.append (Filial(codigo_filial,
                                             linha_editada[1],
                                             linha_editada[2],
                                             linha_editada[3]))
@@ -755,7 +754,7 @@ class SistemaDeLivraria:
                         nome = filial.nome_filial
                         if nome in self.estoque_filiais:
                             linha_filial = (
-                                f"{filial.codigo_filial},{filial.nome_filial},"
+                                f"#FL{filial.codigo_filial},{filial.nome_filial},"
                                 f"{filial.endereco},{filial.contato}\n")
                             arquivo.write(linha_filial)
 
@@ -945,13 +944,22 @@ class SistemaDeLivraria:
 
             if pergunta_atualizar_arquivo_1.lower() == "s":
 
-                with  open("BancoDeLivros.txt", "w", encoding="utf8") as arquivo:
+                with  open("BancoDeLivros.txt", "w", encoding="UTF8") as arquivo:
 
-                    for livro in self.livros:
-                        linha = (f"\n{livro.codigo},{livro.titulo},{livro.editora},{livro.categoria}"
-                                 f",{livro.ano},{livro.valor},{livro.quantidade_em_estoque}")
+                    for filial in self.filiais:
+                        nome = filial.nome_filial
+                        if nome in self.estoque_filiais:
+                            linha_filial = (
+                                f"{filial.codigo_filial},{filial.nome_filial},"
+                                f"{filial.endereco},{filial.contato}\n")
+                            arquivo.write(linha_filial)
 
-                        arquivo.write(linha)
+                        for livro in self.estoque_filiais[nome]:
+                            linha_livro = (f"{livro.codigo},{livro.titulo},{livro.editora},{livro.categoria}"
+                                           f",{livro.ano},R${livro.valor},{livro.quantidade_em_estoque}\n")
+                            arquivo.write(linha_livro)
+
+                        arquivo.write("\n")
 
                 print()
                 print('Estoque Atualizado! Obrigado e volte sempre!')
