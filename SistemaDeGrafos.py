@@ -43,31 +43,34 @@ class Grafos:
                 escolha_usuario = int(input(f'Digite a opção desejada: '))
 
                 match escolha_usuario:
+
                     case 1:
-                        Grafos().cadastrar_cidade()
+                        self.cadastrar_cidade()
 
                     case 2:
-                        Grafos().cadastrar_conexao()
+                        self.cadastrar_conexao()
 
                     case 3:
-                        Grafos().info_cidades()
+                        self.info_cidades()
 
                     case 4:
-                        Grafos().info_conexoes()
+                        self.info_conexoes()
 
                     case 5:
-                        Vertices().info_vizinhos()
+                        Vertice(None).info_vizinhos()
 
             except ValueError:
                 print('\nEntrada inválida, digite apenas números.\n')
 
     def cadastrar_cidade(self):
+
         print('\n*** Cadastro de cidades ***\n')
 
         while True:
 
             nome_cidade = input('Digite o nome da cidade: \n')
-            self.cidades.append(nome_cidade)
+
+            self.cidades.append(Vertice(nome_cidade))               #Objeto vai para a Lista de Cidades (Vertices)
 
             pergunta_usuario = input('Deseja cadastrar mais cidades (s/n) ? \n')
 
@@ -76,40 +79,68 @@ class Grafos:
                     break
 
                 else:
-                    Grafos().menu()
+                    self.menu()
 
     def cadastrar_conexao(self):
-        pass
+        print('\n*** Cadastro de conexão ***\n')
+
+
+        while True:
+
+            cidade_1 = input('Digite o nome da cidade 1: \n')
+            cidade_2 = input('Digite o nome da cidade 2: \n')
+            distancia = float(input('Digite a distância entre as cidades (ex: 219.8): \n'))
+
+            self.conexoes.append(Arestas(cidade_1,cidade_2,distancia)) # Objeto vai para a Lista de Conexões (Aresta)
+
+            pergunta_usuario = input('Deseja cadastrar mais conexões (s/n)? \n')
+
+            while True:
+                if pergunta_usuario.lower() == "s":
+                    break
+
+                else:
+                    self.menu()
 
     def info_cidades(self):  # 3 - Listar Cidades
-        pass
+        print("\nLista de Cidades:\n")
+
+        for i in self.cidades:
+            print(i.info_vertice())
+            print()
+
+
+        self.menu()
 
     def info_conexoes(self):  # 4 - Listas conexões
         pass
 
 
-class Vertices:
+class Vertice:
 
-    def __init__(self,nome_cidade,vizinhanca,conexoes):
-        self.nome_cidade = None
+    def __init__(self,nome_cidade):
+        self.nome_cidade = nome_cidade
         self.vizinhanca = []
-        self.conexoes = conexoes
+        self.conexoes = []
 
     def info_vizinhos(self): pass
 
     def info_conexoes(self): pass
 
-    def info_vertice(self): pass
-
+    def info_vertice(self):
+        return self.nome_cidade
 
 class Arestas:
 
-    def __init__(self, cidade1, cidade2, distancia=0):
+    def __init__(self, cidade1, cidade2, distancia):
         self.cidade1 = cidade1
         self.cidade2 = cidade2
         self.distancia = distancia
 
-    def info_aresta(self): pass
+    def info_aresta(self):
+        return (f'Cidade 1: {self.cidade1}\n'
+                f'Cidade 2: {self.cidade2}\n'
+                f'Distância: {self.distancia}\n')
 
 
 if __name__ == '__main__':
