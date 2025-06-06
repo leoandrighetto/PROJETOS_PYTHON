@@ -56,7 +56,12 @@ class Grafos:
         self.menu()
 
     def info_conexoes(self):  # 4 - Listas conexões - Lista TODAS as Arestas
-        pass
+        print("\nLista de Conexões:\n")
+
+        for i in self.conexoes:
+            print(self.conexoes())
+            print()
+
 
     def menu(self):
 
@@ -111,7 +116,7 @@ class Vertice:
     def info_vertice(self):
         return self.nome_cidade
 
-class Arestas:
+class Aresta:
 
     def __init__(self, cidade1, cidade2, distancia):
         self.cidade1 = cidade1
@@ -124,4 +129,47 @@ class Arestas:
                 f'Distância: {self.distancia}\n')
 
 if __name__ == '__main__':
-    Grafos().menu()
+
+    grafo = Grafos()
+
+    with open ("Banco_de_grafos.csv", "r", encoding="utf-8") as arquivo:
+
+        linha = arquivo.readline().replace('\n','')
+        linha = linha.strip()
+
+        for linha in arquivo:
+
+            linha = linha.strip()
+
+            # partes = []
+            # for p in linha.split(","):
+            #     partes.append(p.strip())
+
+            partes = [i.strip() for i in linha.split(',')]
+
+            # distancia = partes[2].split("Km")
+
+            cidade1 = partes[0]
+            cidade2 = partes[1]
+            # distancia = float(partes[2])
+
+            distancia = float(partes[2].replace("km","").strip())
+
+
+            grafo.conexoes.append(Aresta(cidade1,cidade2,distancia))
+
+            for i in grafo.cidades:
+                if cidade1 not in i:
+                    grafo.cidade.append(cidade1)
+                if cidade2 not in i:
+                    grafo.cidade.append(cidade2)
+
+        linha = "   Porto Alegre, Pelotas, 291.3km\n"
+        linha_limpa = linha.strip()
+
+        print(repr(linha))  # '   Porto Alegre, Pelotas, 291.3km\n'
+        print(repr(linha_limpa))  # 'Porto Alegre, Pelotas, 291.3km'
+
+
+
+    grafo.menu()
