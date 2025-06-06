@@ -1,66 +1,9 @@
-''''Para este trabalho deve ser construido um programa cuja funcionalidade principal é construir um grafo.
-O programa deve ter uma interface com as seguintes opções:
-
-Cadastrar cidade - instancia um objeto do tipo Vertice
-Cadastra conexão - instancia um objeto do tipo Aresta
-
-Listar cidades - lista todos os vertices do grafo
-    * Deve aparecer em ordem alfabética.
-
-Listar conexões - lista todas as arestas do grafo
-    * Deve ser informada a distancia entre as cidades da conexão.
-
-Listar cidades vizinhas - lista todas as cidades conectadas à uma cidade específica
-    * Também deve ser informada a distancia entre a cidade e suas cidades vizinhas
-    * Deve ser ordenada pela menor distancia
-
-A entrada de dados deve ser feita por interface e também por um arquivo csv unico contendo dados no seguinte formato:
-
-<nome da cidade1>,  <nome da cidade 2>, <distancia entre as cidades em km>
-Porto Alegre, Pelotas, 291.3km
-'''
-
-
 class Grafos:
 
     def __init__(self):
-        self.cidades = []
-        self.conexoes = []
+        self.cidades = []   #Lista de TODAS as cidades
+        self.conexoes = []  #Lista de TODAS as Arestas
 
-    def menu(self):
-
-        print(f'*** Sistema de Grafos ***\n\n'
-              '1 - Cadastrar cidade\n'
-              '2 - Cadastrar conexão\n'
-              '3 - Listar cidades\n'
-              '4 - Listar conexões\n'
-              '5 - Listar cidades vizinhas\n')
-
-        while True:
-
-            try:
-
-                escolha_usuario = int(input(f'Digite a opção desejada: '))
-
-                match escolha_usuario:
-
-                    case 1:
-                        self.cadastrar_cidade()
-
-                    case 2:
-                        self.cadastrar_conexao()
-
-                    case 3:
-                        self.info_cidades()
-
-                    case 4:
-                        self.info_conexoes()
-
-                    case 5:
-                        Vertice(None).info_vizinhos()
-
-            except ValueError:
-                print('\nEntrada inválida, digite apenas números.\n')
 
     def cadastrar_cidade(self):
 
@@ -112,20 +55,58 @@ class Grafos:
 
         self.menu()
 
-    def info_conexoes(self):  # 4 - Listas conexões
+    def info_conexoes(self):  # 4 - Listas conexões - Lista TODAS as Arestas
         pass
 
+    def menu(self):
+
+        print(f'*** Sistema de Grafos ***\n\n'
+              '1 - Cadastrar cidade\n'
+              '2 - Cadastrar conexão\n'
+              '3 - Listar cidades\n'
+              '4 - Listar conexões\n'
+              '5 - Listar cidades vizinhas\n')
+
+        while True:
+
+            try:
+
+                escolha_usuario = int(input(f'Digite a opção desejada: '))
+
+                match escolha_usuario:
+
+                    case 1:
+                        self.cadastrar_cidade()
+
+                    case 2:
+                        self.cadastrar_conexao()
+
+                    case 3:
+                        self.info_cidades()
+
+                    case 4:
+                        self.info_conexoes()
+
+                    case 5:
+                        Vertice(None).info_vizinhos()
+
+            except ValueError:
+                print('\nEntrada inválida, digite apenas números.\n')
 
 class Vertice:
 
     def __init__(self,nome_cidade):
         self.nome_cidade = nome_cidade
-        self.vizinhanca = []
-        self.conexoes = []
+        self.vizinhanca = []    #Lista Vazia, para armazenar cidades conectadas a uma cidade específica
+        self.conexoes = []  #Lista CONEXÕES de uma cidade específica
 
-    def info_vizinhos(self): pass
+    def info_vizinhos(self):
 
-    def info_conexoes(self): pass
+        cidade_escolhida = input('Digite o nome da cidade: \n')
+
+
+    def info_conexoes(self):
+        return self.conexoes
 
     def info_vertice(self):
         return self.nome_cidade
@@ -141,7 +122,6 @@ class Arestas:
         return (f'Cidade 1: {self.cidade1}\n'
                 f'Cidade 2: {self.cidade2}\n'
                 f'Distância: {self.distancia}\n')
-
 
 if __name__ == '__main__':
     Grafos().menu()
