@@ -103,7 +103,7 @@ class Vertice:
 
     def __init__(self,nome_cidade):
         self.nome_cidade = nome_cidade
-        self.vizinhanca = []    #Lista Vazia, para armazenar cidades conectadas a uma cidade específica
+        self.vizinhanca = {}
 
         '''self.vizinhos = {
     "Pelotas": ["Canoas", "Porto Alegre"],
