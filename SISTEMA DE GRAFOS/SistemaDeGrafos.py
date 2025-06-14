@@ -14,86 +14,101 @@ class Grafos:
 
             self.cidades.append(Vertice(nome_cidade))               #Objeto vai para a Lista de Cidades (Vertices)
 
-            pergunta_usuario = input('Deseja cadastrar mais cidades (s/n) ? \n')
-
             while True:
+                pergunta_usuario = input('Deseja cadastrar mais cidades (s/n) ? \n')
+
                 if pergunta_usuario.lower() == "s":
                     break
 
-                else:
-                    for cidade in self.cidades:
-                        print(f'>>>>>{nome_cidade}')
+                elif pergunta_usuario.lower() == "n":
                     self.menu()
+                else:
+                    print('\nentrada invalida\n')
 
     def cadastrar_conexao(self):
         print('\n*** Cadastro de conexão ***\n')
-
 
         while True:
 
             cidade1 = input('Digite o nome da cidade 1: \n')
             cidade2 = input('Digite o nome da cidade 2: \n')
-            distancia = float(input('Digite a distância entre as cidades (ex: 219.8): \n'))
+            distancia = float(input('Digite a distância entre as cidades (ex: 200.1): \n'))
 
-            self.conexoes.append(Aresta(cidade1,cidade2,distancia)) # Objeto vai para a Lista de Conexões (Aresta)
+            nova_aresta1 = Aresta(cidade1,cidade2,distancia)
+            nova_aresta2 = Aresta(cidade2, cidade1, distancia)
 
-            # SE A LISTA DE CONEXÕES ESPECÍFICAS ESTIVER VAZIA:
-            if not Vertice.conexoes_especificas:
-                Vertice.conexoes_especificas.append({cidade1 : [Aresta(cidade1,cidade2,distancia)]})
-                Vertice.conexoes_especificas.append({cidade2: [Aresta(cidade2, cidade1, distancia)]})
+            self.conexoes.append(nova_aresta1) # Objeto vai para a Lista de Conexões (Aresta)
 
-            #senão
+                                 ###    CADASTRO CIDADE:
+            lista_cidades = [cidades.nome_cidade.lower() for cidades in self.cidades]
+
+            if cidade1.lower() not in lista_cidades:
+                self.cidades.append(Vertice(cidade1))
+
+            if cidade2.lower() not in lista_cidades:
+                self.cidades.append(Vertice(cidade2))
+
+                        ###     CONEXÕES ESPECÍFICAS:
+
+            d_c = Vertice.conexoes_especificas  #Dicionario de Conexoes (d_c)
+
+            if not d_c:
+                d_c[cidade1] = [nova_aresta1]
+                d_c[cidade2] = [nova_aresta2]
+
             else:
-                cidade1_encontrada = False
-                cidade2_encontrada = False
-                for dicionarios in Vertice.conexoes_especificas:    #acessa os dicionarios
-                    for chave, valor in dicionarios.items():        #acessa chaves e valor no dicionario
-                        if cidade1.lower() == chave.lower():        #verifica de a cidade 1 é uma chave
-                            cidade1_encontrada = True                #verifica de a cidade 2 é uma chave
-                        if cidade2.lower() == chave.lower():
-                            cidade2_encontrada = True
-                            break
-
-                    if cidade1_encontrada and cidade2_encontrada:       #SE UMA DELA FOR CHAVE quebra o loop
-                        break
-
-                if not cidade1_encontrada and not cidade2_encontrada:
-                    if not cidade1_encontrada:
-                        Vertice.conexoes_especificas.append({cidade1: [Aresta(cidade1, cidade2, distancia)]})
-                    if not cidade2_encontrada:
-                        Vertice.conexoes_especificas.append({cidade2: [Aresta(cidade2, cidade1, distancia)]})
+                if cidade1 not in d_c:
+                    d_c[cidade1] = [nova_aresta1]
 
                 else:
-                    if cidade1_encontrada:
-                        aresta_igual = False
-                        for dicionarios in Vertice.conexoes_especificas:
-                            for chave, valor in dicionarios.items():
-                                if chave.lower() == cidade1.lower():  # encontra a chave
-                                    for aresta in valor:
-                                        if aresta == Aresta(cidade1, cidade2, distancia):
-                                            aresta_igual = True
+                    if nova_aresta1 not in d_c[cidade1]:
+                        d_c[cidade1].append(nova_aresta1)
+                    else:
+                        print('Conexão já existe\n')
 
-                                    if not aresta_igual:  # senão adiciona na lista de Arestas.
-                                        valor.append(Aresta(cidade1, cidade2, distancia))
+                if cidade2 not in d_c:
+                    d_c[cidade2] = [nova_aresta2]
 
-                        if aresta_igual:
-                            print('Conexão já existe')
+                else:
+                    if nova_aresta2 not in d_c[cidade2]:
+                        d_c[cidade2].append(nova_aresta2)
+                    else:
+                        print('Conexão já existe\n')
 
-                        if cidade2_encontrada:
-                            aresta_igual = False
-                            for dicionarios in Vertice.conexoes_especificas:
-                                for chave, valor in dicionarios.items():
-                                    if chave.lower() == cidade2.lower():  # encontra a chave
-                                        for aresta in valor:
-                                            if aresta == Aresta(cidade2, cidade1, distancia):
-                                                aresta_igual = True
+                                ###     CIDADES VIZINHAS:
 
-                                        if not aresta_igual:  # senão adiciona na lista de Arestas.
-                                            valor.append(Aresta(cidade2, cidade1, distancia))
+            d_v = Vertice.vizinhanca
 
-                            if aresta_igual:
-                                print('Conexão já existe')
+            if not d_v:
+                d_v[cidade1] = [cidade2]
+                d_v[cidade2] = [cidade1]
 
+            else:
+                if cidade1 not in d_v:
+                    d_v[cidade1] = [cidade2]
+
+                else:
+                    if cidade2 not in d_v[cidade1]:
+                        d_v[cidade1].append(cidade2)
+
+                if cidade2 not in d_v:
+                    d_v[cidade2] = [cidade1]
+
+                else:
+                    if cidade1 not in d_v[cidade2]:
+                        d_v[cidade2].append(cidade1)
+
+            while True:
+                per = input("deseja cadastrar mais conexões (s/n) ? \n")
+
+                if per.lower() == "s":
+                    break
+
+                elif per.lower() == "n":
+                    self.menu()
+                    break
+                else:
+                    print('entrada inválida\n')
 
     def info_cidades(self):  # 3 - Listar Cidades
         print("\nLista de Cidades:\n")
@@ -101,12 +116,19 @@ class Grafos:
         cidades_ordenadas = sorted(self.cidades, key=lambda cidade: cidade.nome_cidade)
 
         for i in cidades_ordenadas:
-            print(f'{i.nome_cidade}\n')
+            print(f'{i.nome_cidade}')
 
         self.menu()
 
     def info_conexoes(self):  # 4 - Listas conexões - Lista TODAS as Arestas
-        pass
+        print("\nLista de Conexões:\n")
+
+        for i in self.conexoes:
+            print(f'Origem: {i.cidade1} \n'
+                  f'Destino: {i.cidade2} \n'
+                  f'Distância: {i.distancia}Km\n\n')
+
+        self.menu()
 
     def menu(self):
 
@@ -145,25 +167,48 @@ class Grafos:
 
 class Vertice:
 
-    conexoes_especificas = []
+    conexoes_especificas = {}
+    vizinhanca = {}
 
-    def __init__(self,nome_cidade):
+    def __init__(self,nome_cidade,grafo=None):
         self.nome_cidade = nome_cidade
-        self.vizinhanca = {}
-
+        self.grafo = grafo
 
 
     def info_vizinhos(self):
 
-        cidade_escolhida = input('Digite o nome da cidade: \n')
+        while True:
+            c_e = input('Digite o nome da cidade: \n')
+
+            lista = self.vizinhanca
+
+            if c_e.lower() in lista:
+                distancias_vizinhos = [aresta.distancia for aresta in self.conexoes_especificas[c_e.lower()]]
+                menor_distancias = sorted(distancias_vizinhos)
+
+                for distancia in menor_distancias:
+
+                    for arestas in self.conexoes_especificas[c_e.lower()]:
+                        if arestas.distancia == distancia:
+                            print(f'\n{arestas.cidade2} ->> {distancia} Km de distância\n')
 
 
-    def info_conexoes(self):
-        return self.conexoes
+                while True:
+                    per = input('Gostaria de buscar novamente(s/n)? ')
+                    if per.lower() == 's':
+                        break
+                    else:
+                        Grafos().menu()
 
+            else:
+                print('cidade não encontrada\n')
+                while True:
+                    per = input('Gostaria de buscar novamente (s/n)? ')
+                    if per.lower() == 's':
+                        break
+                    else:
+                        Grafos().menu()
 
-    def info_vertice(self):
-        return self.nome_cidade
 
 class Aresta:
 
@@ -171,21 +216,6 @@ class Aresta:
         self.cidade1 = cidade1
         self.cidade2 = cidade2
         self.distancia = distancia
-
-
-    def __eq__(self, other):
-        #Se o outro NÃO é instancia
-        if not isinstance(other, Aresta): #verifica se o outro objeto faz parte da classe (aresta, neste caso)
-            return False
-        return (self.cidade1.lower() == other.cidade1.lower() and
-                self.cidade2.lower() == other.cidade2.lower() and
-                self.distancia == other.distancia)
-
-    def info_aresta(self):
-        return (f'Cidade 1: {self.cidade1}\n'
-                f'Cidade 2: {self.cidade2}\n'
-                f'Distância: {self.distancia}\n')
-
 
 
 if __name__ == '__main__':
