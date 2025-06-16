@@ -1,37 +1,46 @@
-Porto Alegre, Pelotas, 291.3km
-Porto Alegre, Canoas, 18.5km
-Pelotas, Rio Grande, 54.2km
-Canoas, Novo Hamburgo, 29.7km
-Novo Hamburgo, São Leopoldo, 7.4km
-São Leopoldo, Esteio, 10.1km
-Esteio, Sapucaia do Sul, 5.2km
-Pelotas, Bagé, 238.6km
-Bagé, Santana do Livramento, 184.9km
-Porto Alegre, Caxias do Sul, 125.0km
-Caxias do Sul, Bento Gonçalves, 41.6km
-Bento Gonçalves, Garibaldi, 11.3km
-Garibaldi, Carlos Barbosa, 8.9km
-Canoas, Gravataí, 23.2km
-Gravataí, Cachoeirinha, 8.4km
-Cachoeirinha, Alvorada, 10.7km
-Alvorada, Viamão, 15.6km
-Viamão, Porto Alegre, 24.3km
-Pelotas, Canguçu, 70.4km
-Canguçu, Encruzilhada do Sul, 94.5km
-Encruzilhada do Sul, Santa Cruz do Sul, 121.1km
-Santa Cruz do Sul, Lajeado, 69.3km
-Lajeado, Estrela, 6.7km
-Estrela, Taquari, 17.8km
-Taquari, Montenegro, 54.2km
-Montenegro, São Sebastião do Caí, 30.3km
-São Sebastião do Caí, Caxias do Sul, 85.7km
-Bagé, Dom Pedrito, 136.0km
-Dom Pedrito, Rosário do Sul, 158.2km
-Rosário do Sul, Alegrete, 114.5km
-Alegrete, Uruguaiana, 121.8km
-Uruguaiana, São Borja, 129.7km
-São Borja, Santiago, 102.6km
-Santiago, Santa Maria, 83.2km
-Santa Maria, Cachoeira do Sul, 105.5km
-Cachoeira do Sul, Rio Pardo, 53.1km
-Rio Pardo, Santa Cruz do Sul, 42.7km
+porto alegre, canoas, 15.0Km
+canoas, porto alegre, 15.0Km
+porto alegre, alvorada, 12.0Km
+alvorada, porto alegre, 12.0Km
+porto alegre, viamão, 25.0Km
+viamão, porto alegre, 25.0Km
+canoas, esteio, 8.0Km
+esteio, canoas, 8.0Km
+esteio, sapucaia do sul, 5.5Km
+sapucaia do sul, esteio, 5.5Km
+sapucaia do sul, são leopoldo, 6.2Km
+são leopoldo, sapucaia do sul, 6.2Km
+são leopoldo, novo hamburgo, 10.1Km
+novo hamburgo, são leopoldo, 10.1Km
+novo hamburgo, dois irmãos, 18.4Km
+dois irmãos, novo hamburgo, 18.4Km
+dois irmãos, ivoti, 6.7Km
+ivoti, dois irmãos, 6.7Km
+ivoti, estância velha, 7.5Km
+estância velha, ivoti, 7.5Km
+alvorada, viamão, 10.0Km
+viamão, alvorada, 10.0Km
+viamão, gravataí, 20.0Km
+gravataí, viamão, 20.0Km
+gravataí, cachoeirinha, 9.3Km
+cachoeirinha, gravataí, 9.3Km
+cachoeirinha, canoas, 11.2Km
+canoas, cachoeirinha, 11.2Km
+canoas, esteio, 8.0Km
+esteio, canoas, 8.0Km
+novo hamburgo, estância velha, 12.0Km
+estância velha, novo hamburgo, 12.0Km
+gramado, canela, 8.0Km
+canela, gramado, 8.0Km
+gramado, nova petrópolis, 20.0Km
+nova petrópolis, gramado, 20.0Km
+nova petrópolis, caxias do sul, 36.0Km
+caxias do sul, nova petrópolis, 36.0Km
+caxias do sul, farroupilha, 10.0Km
+farroupilha, caxias do sul, 10.0Km
+farroupilha, bento gonçalves, 15.0Km
+bento gonçalves, farroupilha, 15.0Km
+bento gonçalves, garibaldi, 12.0Km
+garibaldi, bento gonçalves, 12.0Km
+garibaldi, carlos barbosa, 7.0Km
+carlos barbosa, garibaldi, 7.0Km
