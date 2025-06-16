@@ -6,7 +6,6 @@ class Grafos:
         self.conexoes_especificas = {}
         self.vizinhanca = {}
 
-
     def cadastrar_cidade(self):
 
         print('\n*** Cadastro de cidades ***\n')
@@ -15,36 +14,35 @@ class Grafos:
 
             nome_cidade = input('Digite o nome da cidade: \n')
 
-            while True:
-
-                if nome_cidade.lower() not in [vertice.nome_cidade.lower() for vertice in self.cidades]:
-                    self.cidades.append(Vertice(nome_cidade))
-                else:
-                    while True:
-                        per = input('Cidade Já cadastrada. Deseja tentar de novo(s/n)? \n')
-                        if per.lower() == "s":
-                            break
-
-                        elif per.lower() == "n":
-                            self.menu()
-                            return
-                        else:
-                            print('\nentrada invalida\n')
+            if nome_cidade.lower() not in [vertice.nome_cidade.lower() for vertice in self.cidades]:
+                self.cidades.append(Vertice(nome_cidade))
 
                 pergunta_usuario = input('Deseja cadastrar mais cidades (s/n) ? \n')
 
                 if pergunta_usuario.lower() == "s":
-                    break
+                    continue
 
                 elif pergunta_usuario.lower() == "n":
                     self.menu()
-                    return
+                    break
                 else:
                     print('\nentrada invalida\n')
 
+            else:
+                while True:
+                    per = input('Cidade Já cadastrada. Deseja tentar de novo(s/n)? \n')
+                    if per.lower() == "s":
+                        break
+
+                    elif per.lower() == "n":
+                        self.menu()
+                        return
+                    else:
+                        print('\nentrada invalida\n')
+
     def cadastrar_conexao(self):
 
-        with open ("Banco_de_grafos.csv","a",encoding="utf-8") as arquivo:
+        with open("Banco_de_grafos.csv", "a", encoding="utf-8") as arquivo:
 
             print('\n*** Cadastro de conexão ***\n')
             while True:
@@ -98,7 +96,7 @@ class Grafos:
                     arquivo.write(linha)
 
                 ### CONEXÕES ESPECÍFICAS
-                d_c = self.conexoes_especificas             #d_c = dicionario de conexoes
+                d_c = self.conexoes_especificas  # d_c = dicionario de conexoes
 
                 if not d_c:
                     d_c[cidade1.lower()] = [nova_aresta1]
@@ -262,7 +260,6 @@ class Aresta:
                 self.distancia == other.distancia)
 
 
-
 if __name__ == '__main__':
 
     grafo = Grafos()
@@ -271,8 +268,7 @@ if __name__ == '__main__':
     d_c = grafo.conexoes_especificas
     d_v = grafo.vizinhanca
 
-
-    with open ("Banco_de_grafos.csv", "r", encoding = "utf-8") as arquivo:
+    with open("Banco_de_grafos.csv", "r", encoding="utf-8") as arquivo:
 
         linha = arquivo.readline().strip()
 
@@ -280,14 +276,13 @@ if __name__ == '__main__':
 
             linha_editada = [index.strip() for index in linha.split(",")]
 
-            linha_editada[2] = linha_editada[2].replace("Km","")
+            linha_editada[2] = linha_editada[2].replace("Km", "")
             linha_editada[2] = float(linha_editada[2])
 
             ###CONEXÕES RECEBE A LISTA
             conexoes.append(Aresta(linha_editada[0], linha_editada[1], linha_editada[2]))
 
             ### CIDADES RECEBE A LISTA
-
 
             if linha_editada[0].lower() not in [cidades.nome_cidade.lower() for cidades in grafo.cidades]:
                 grafo.cidades.append(Vertice(linha_editada[0]))
@@ -315,7 +310,6 @@ if __name__ == '__main__':
                     d_c[linha_editada[1].lower()] = [nova_aresta2]
                 else:
                     if nova_aresta2 not in d_c[linha_editada[1].lower()]:
-
                         d_c[linha_editada[1].lower()].append(nova_aresta2)
 
                 ### CIDADES VIZINHAS RECEBEM A LISTA:
@@ -340,6 +334,5 @@ if __name__ == '__main__':
                             d_v[cidade2.lower()].append(cidade1)
 
             linha = arquivo.readline().strip()
-
 
     grafo.menu()
