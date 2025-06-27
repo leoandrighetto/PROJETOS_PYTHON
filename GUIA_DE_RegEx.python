@@ -1,0 +1,46 @@
+BUSCA
+
+[0]    > BUSCA caracter dentro dos colchetes
+
+[02]   > BUSCA um OU outro caracter dentro dos colchetes
+
+[0-9]  > BUSCA número DE um número ATÉ outro número de dentro dos colchetes
+
+
+
+QUANTIFICADORES
+
+[0]{5} >   {5} = "quantificador" BUSCA - {5}  - ocorrências do caracter escolhido.
+
+      exemplo:
+              [0-9]{5} > BUSCA os {5} primeiros dígitos na busca (em uma lista de números, por exemplo).
+
+
+
+      $      > FIM DA LINHA:
+      
+              [0-9]{5}$ > BUSCA e confere os {5} últimos dígitos na busca (e se a busca POSSUI)
+                
+      ^      > COMEÇO DA LINHA:
+
+              ^[0-9]{5} > BUSCA e confere se {5} primeiros dígitos na busca (e se a busca POSSUI)
+
+
+EX:
+^[0-9]{6}$ > linha com 6 dígitos.
+
+
+O MESMO VALE PARA LETRAS DO ALFABETO:
+
+Exemplo:
+
+        ^[0-9] + [-] [a-z]$ 
+
+sinal "+" concatena
+
+
+\     > separa o que será concatenado
+
+
+^[0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2}$
+  
