@@ -1,15 +1,18 @@
 import re
 
 class Pessoa:
-    __pessoas = []
+    __todas_as_pessoas = []
+    
+    __contas_de_Pessoa = []
+    
 
-    def __init__(self, nome, sobrenome, idade: int, cpf):
+    def __init__(self, nome, sobrenome, idade, cpf):
         self.nome = nome            #STRING
         self.sobrenome = sobrenome  #STRING
         self.idade = idade          #INT
         self.__cpf = cpf            #STRING
         self.__contas_bancarias = []
-
+        
     @property
     def cpf(self):
         return self.__cpf
@@ -17,6 +20,14 @@ class Pessoa:
     @cpf.setter
     def cpf(self, novo_cpf):
         self.__cpf = novo_cpf
+
+    @property
+    def contas_bancarias(self):
+        return self.__contas_bancarias
+
+    @contas_bancarias.setter
+    def contas_bancarias(self, nova_contas_bancarias):
+        self.__contas_bancarias = nova_contas_bancarias
 
     def __eq__(self, other):
         if isinstance(other, Pessoa):
@@ -27,30 +38,40 @@ class Pessoa:
 
         return False
 
-
     def info_banco(self):
         pass
-
 
     def info_contas(self):
         pass
 
     @classmethod
     def pessoas(cls):
-        return cls.__pessoas
+        return cls.__todas_as_pessoas
 
     @classmethod
     def contas_bancarias(cls):
-        return cls.__contas_bancarias
+        pass
+
+    @classmethod
+    def buscar_pessoa(cls):
+        return cls.__todas_as_pessoas
+    
+    @classmethod
+    def buscar_conta(cls):
+        return cls.__contas_de_Pessoa
 
 
 class Banco:
 
-    def __init__(self, nome,cnpj,nro_banco):
+    __todos_os_bancos = []
+    
+    __contas_de_Banco = []  
+
+    def __init__(self, nome, cnpj, nro_banco):
         self.__nome = nome
         self.__cnpj = cnpj
         self.__nro_banco = nro_banco
-        self.__contas_banco = []
+        self.__contas_bancarias = []
 
 
     #Atributos protegidos por decoradores
@@ -77,7 +98,14 @@ class Banco:
     @nro_banco.setter
     def nro_banco(self, novo_nro_banco):
         self.__nro_banco = novo_nro_banco
-
+    
+    @property
+    def contas_bancarias(self):
+        return self.__contas_bancarias
+    
+    @contas_bancarias.setter
+    def contas_bancarias(self, nova_contas_bancarias):
+        self.__contas_bancarias = nova_contas_bancarias
 
     #Métodos da classe
     @classmethod
@@ -89,64 +117,65 @@ class Banco:
         pass
 
     @classmethod
-    def criar_conta(cls):
+    def buscar_banco(cls):
+        return cls.__todos_os_bancos
+    
+    @classmethod
+    def buscar_conta(cls):
+        return cls.__contas_de_Banco
+
+    @classmethod
+    def criar_banco(cls):
         # self,titular,banco,nro_conta,saldo,senha
 
-        lista_pessoas = Pessoa.pessoas()
+        while True:
 
-        val = Validacoes()
+            lista_de_bancos = Banco.buscar_banco()
+            val = Validacoes()
+            validar_banco = {'Nome' : val.validar_nome,
+                             'CNPJ' : val.validar_cnpj,
+                             'Número' : val.validar_nro_banco}
 
-        validar_pessoa = {'Nome' : val.validar_nome,
-                  'Sobrenome' : val.validar_sobrenome,
-                  'Idade' : val.validar_idade,
-                  'CPF' : val.validar_cpf}
+            print('CADASTRO DE BANCO\n')
 
-        cliente_em_codigo = []
+            print(f'Ex. de CNPJ: " 00.000.000/0000-00 "\n'
+                  f'Ex. de número de Banco: 0000 (4 dígitos)\n')
 
-        validar_banco = {'Nome' : val.validar_nome,
-                         'CNPJ' : val.verifica_cnpj,
-                         'Número do Banco' : val.verifica_nro_banco}
+            dados_banco = []
 
-        banco_em_codigo = []
+            for chave, funcao in validar_banco.items():
+                while True:
 
-        print('\nCADASTRO DE CONTA\n\n')
+                    dado = input(f'Digite o(a) {chave} do Banco: ')
 
-        #para validar os dados eu acesso as chaves e valores no dicionario
-        print('Cadastro Pessoa Física:\n\n')
+                    validacao = funcao(dado)
+                    if validacao:
+                        dados_banco.append(dado)
+                        break
+                    else:
+                        print(f'{chave} inválido(a)')
 
-        dados_pessoa = []
-        dados_banco = []
 
-        for chave, funcao in validar_pessoa.items():
-            while True:
+            novo_banco = Banco(dados_banco[0], dados_banco[1], dados_banco[2])
 
-                pergunta = input(f'Digite seu(a) {chave}: ')
+            interface = Interface()
+            if not lista_de_bancos:
+                lista_de_bancos.append(novo_banco)
+                print('Banco cadastrado com sucesso!')
 
-                teste = funcao(pergunta)
-                if teste:
-                    dados_pessoa.append(pergunta)
+                interface.menu()
+
+            else:
+                if novo_banco not in lista_de_bancos:
+
+
+                    lista_de_bancos.append(novo_banco)
+                    print('Banco cadastrado com sucesso!')
+
+                    interface.menu()
                     break
                 else:
-                    print(f'{chave} inválido(a)')
-
-        nova_pessoa = Pessoa(dados_pessoa[0], dados_pessoa[1], int(dados_pessoa[2]), dados_pessoa[3])
-
-        if not lista_pessoas:
-            lista_pessoas.append(nova_pessoa)
-
-        else:
-            flag = False
-            for i in lista_pessoas:
-                if nova_pessoa == i:
-                    flag = True
-
-            if flag == False:
-                lista_pessoas.append(nova_pessoa)
-
-
-
-
-
+                    print('Banco já existe')
 
     @classmethod
     def fechar_conta(cls):
@@ -161,6 +190,9 @@ class Banco:
         return False
 
 class ContaBancaria:
+    
+    __todas_as_contas = []
+    
     def __init__(self,titular,banco,nro_conta,saldo,senha):
         self._titular = titular     #Objeto Pessoa
         self._banco = banco         #Objeto Banco
@@ -214,9 +246,14 @@ class ContaBancaria:
 
     @classmethod
     def todas_contas(cls):
-        return cls.__todas_contas
+        pass
 
     #Métodos da classe
+    
+    @classmethod
+    def buscar_conta(cls):
+        return cls.__todas_as_contas
+    
     def saque(self):
         pass
 
@@ -225,8 +262,10 @@ class ContaBancaria:
 
     def verificar_senha(self):
         pass
-
+    
 class ContaCorrente(ContaBancaria):
+    
+    __contas_corrente = []
 
     def __init__(self,pessoa,banco,nro_conta,saldo,senha,taxas_mensais):
         super().__init__(pessoa,banco,nro_conta,saldo,senha)
@@ -251,6 +290,8 @@ class ContaCorrente(ContaBancaria):
         pass
 
 class ContaPoupanca(ContaBancaria):
+    
+    __contas_poupanca = []
 
     def __init__(self, pessoa, banco, nro_conta, saldo, senha, rendimentos,saques_mensais):
         super().__init__(pessoa, banco, nro_conta, saldo, senha)
@@ -286,11 +327,8 @@ class ContaPoupanca(ContaBancaria):
 class Interface:
 
     def __init__(self):
-
-        self.bancos_cadastrados = []
-        self.clientes_cadastrados = []
-        self.contas_cadastradas = []
-
+        pass
+    
     def menu(self):
 
         print(f"\n 1 - Cadastrar Banco\n"
@@ -311,54 +349,192 @@ class Interface:
                 match pergunta_menu_1:
 
                     case 1:
-                        self.cadastrar_banco()
-
+                        Banco.criar_banco()
                     case 2:
-                        self.cadastrar_cliente()
+                        self.cadastrar_pessoa()
 
                     case 3:
-                        Banco.criar_conta()
+                        self.cadastrar_conta()
 
 
             except ValueError:
                 print('\nEntrada Inválida! Somente números inteiros.')
 
-    def cadastrar_banco(self):
+    def cadastrar_pessoa(self):
 
-        print("Cadastrar Banco")
+        while True:
 
-        nome = input('\nDigite o nome do banco: \n')
-        cnpj = input('Digite o CNPJ do banco: \n')
-        nro_banco = int(input('Digite o número da conta do banco: \n'))
+            lista_de_pessoas = Pessoa.buscar_pessoa()
+            val = Validacoes()
+            validar_pessoa = {'Nome': val.validar_nome,
+                             'Sobrenome': val.validar_sobrenome,
+                             'Idade': val.validar_idade,
+                              'CPF': val.validar_cpf}
 
-        novo_banco = Banco(nome, cnpj, nro_banco)
-        self.bancos_cadastrados.append(novo_banco)
+            print('CADASTRO DE CLIENTE\n')
 
-        print('\nBanco criado.')
-        self.menu()
+            print(f'Ex. de CPF: 000.000.000-00 \n')
 
+            dados_pessoa = []
 
-    def cadastrar_cliente(self):
+            for chave, funcao in validar_pessoa.items():
+                while True:
 
-        print("Cadastrar Cliente\n")
+                    dado = input (f'Digite seu(a) {chave}: ')
 
-        nome = input('\nDigite o nome do cliente: \n')
-        sobrenome = input('Digite o sobrenome do cliente: \n')
-        idade = int(input('Digite a idade do cliente: \n'))
-        cpf = input('Digite o cpf do cliente: \n')
+                    validacao = funcao(dado)
+                    if validacao:
+                        dados_pessoa.append(dado)
+                        break
+                    else:
+                        print(f'{chave} inválido(a)')
 
-        nova_pessoa = Pessoa(nome, sobrenome, idade, cpf)
-        self.clientes_cadastrados.append(nova_pessoa)
+            nova_pessoa = Pessoa(dados_pessoa[0], dados_pessoa[1], dados_pessoa[2],dados_pessoa[3])
 
-        print('Novo cliente criado.')
-        self.menu()
+            interface = Interface()
+            if not lista_de_pessoas:
+                lista_de_pessoas.append(nova_pessoa)
+                print('Cliente cadastrado com sucesso!')
+                print(lista_de_pessoas)
 
+                interface.menu()
+
+            else:
+                if nova_pessoa not in lista_de_pessoas:
+
+                    lista_de_pessoas.append(nova_pessoa)
+                    print('Cliente cadastrado com sucesso!')
+                    print(lista_de_pessoas)
+
+                    interface.menu()
+                    break
+                else:
+                    print('Cliente já existe')
 
     def cadastrar_conta(self):
+        while True:
+            
+            print('CADASTRO DE CLIENTE\n')
+            
+            print(f'Ex. de CPF: 000.000.000-00 \n'
+                  f'Número de Banco deve conter 4 dígitos numéricos\n'
+                  f'Número da conta deve conter 10 digitos numéricos\n'
+                  f'A senha deve ser númerica com 4 dígitos')
+            
+            # titular,banco,nro_conta,saldo,senha
+            interface = Interface()
+            lista_de_contas = ContaBancaria.buscar_conta()
+            val = Validacoes()
+            validar_conta = {'CPF': val.validar_cpf,
+                             'Número do Banco': val.validar_nro_banco,
+                             'Número da Conta': val.validar_nro_conta,
+                             'Senha': val.validar_senha
+                             }
 
-        self.menu()
+            dados_conta = []
+
+            for chave, funcao in validar_conta.items():
+                while True:
+
+                    dado = input(f'Digite o(a) {chave}: ')
+
+                    validacao = funcao(dado)
+                    if validacao:
+                        dados_conta.append(dado)
+                        break
+                    else:
+                        print(f'{chave} inválido(a)')
+
+            # preciso verificar se o cpf existe na classe Pessoa(além da função de validação).
+            
+            buscar_cpf = Pessoa.buscar_pessoa()
+            
+            titular_atual = None
+            banco_atual = None
+            
+            cpf_encontrado = False
+            for titular in buscar_cpf:
+                if dados_conta[0] == titular.cpf:
+                    cpf_encontrado = True
+                    titular_atual = Pessoa(titular.nome,titular.sobrenome,titular.idade,titular.cpf)
+            
+            if cpf_encontrado:
+
+                buscar_banco = Banco.buscar_banco()
+                
+                banco_encontrado = False                
+                for banco in buscar_banco:
+                    if dados_conta[1] == banco.nro_banco:
+                        banco_encontrado = True
+                        banco_atual = Banco(banco.nome,banco.cnpj,banco.nro_banco)
+                
+                if banco_encontrado:
+                    buscar_conta = Banco.buscar_conta()
+                    
+                    conta_encontrada = False
+                    for conta in buscar_conta:
+                        if dados_conta[2] == conta.nro_banco:
+                            conta_encontrada = True
+                            
+                    if not conta_encontrada:
+                        todas_as_contas = ContaBancaria.buscar_conta()
+                        contas_da_pessoa = Pessoa.buscar_conta()
+                        contas_do_banco = Banco.buscar_conta()
+                        
+                        if not todas_as_contas:
+                            todas_as_contas.append(ContaBancaria(titular_atual,banco_atual,dados_conta[2],0,dados_conta[3]))
+                            
+                        if not contas_da_pessoa:
+                            
+                            
+                        if not contas_do_banco:
+                        
+                        
+                        
+                        
+                # append da conta em todas as contas
+                # append da conta na lista de contas bancárias da PESSOA <<<<<< 
+
+                # append da conta na lista de contas bancárias do BANCO <<<
+            
 
 
+
+
+            # se o cpf existir:
+            # preciso verificar se o banco existe:
+            # se o banco existir:
+            # verifico se a conta já existe naquele banco
+            # Se não existir
+            # append da conta em todas as contas
+            # append da conta na lista de contas bancárias da PESSOA <<<<<< 
+
+            # append da conta na lista de contas bancárias do BANCO <<< 
+                        
+
+            # nova_pessoa = Pessoa(dados_conta[0], dados_conta[1], dados_conta[2], dados_conta[3])
+            # 
+            # interface = Interface()
+            # if not lista_de_contas:
+            #     lista_de_contas.append(nova_pessoa)
+            #     print('Conta cadastrada com sucesso!')
+            #     print(lista_de_contas)
+            # 
+            #     interface.menu()
+            #     break
+            # 
+            # else:
+            #     if nova_pessoa not in lista_de_contas:
+            # 
+            #         lista_de_contas.append(nova_pessoa)
+            #         print('Conta cadastrada com sucesso!')
+            #         print(lista_de_contas)
+            # 
+            #         interface.menu()
+            #         break
+            #     else:
+            #         print('Conta já existe')
+        
     def listar_bancos(self):
 #1 - acessar a lista de bancos
 #2 - iterar sobre a lista
@@ -368,7 +544,8 @@ class Interface:
 class Validacoes:
 
     def validar_nome(self,valor):
-        return bool(re.fullmatch(r"[A-Za-zÀ-ÿ\s]+", valor))
+        return bool(re.fullmatch(r"[A-Z a-zÀ-ÿ\s]+", valor))
+                                        #letras de a a-z maiúsculas ou mínusculas e símbolos
 
     def validar_sobrenome(self,valor):
         return bool(re.fullmatch(r"[A-Za-zÀ-ÿ\s]+", valor))
@@ -377,29 +554,26 @@ class Validacoes:
         return valor.isdigit()
 
     def validar_cpf(self, valor):
-        return re.fullmatch(r"\d{11}", valor)
+        return re.fullmatch(r"[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}", valor)
 
     def validar_senha(self,valor):
-        return valor.isdigit()
+        return re.fullmatch(r'[0-9]{4}', valor)
 
-    def verifica_cnpj(self,valor):
-        return re.match(r'[0-9]{2}\.[0-9]{3}\.[0-9]{3}\/[0-9]{4}\-[0-9]{2}', valor)
+    def validar_cnpj(self,valor):
+        return re.fullmatch(r'[0-9]{2}.[0-9]{3}.[0-9]{3}/[0-9]{4}-[0-9]{2}', valor)
 
-    def verifica_nro_conta(self,valor):
-        return valor.isdigit()
+    def validar_nro_conta(self,valor):
+        return re.fullmatch(r'[0-9]{10}', valor)
 
-    def verifica_nro_banco(self,valor):
-        return valor.isdigit()
+    def validar_nro_banco(self,valor):
+        return re.fullmatch(r'[0-9]{4}', valor)
 
-    def verifica_saldo(self,valor):
+    def validar_saldo(self,valor):
         try:
             float(valor)
             return True
         except ValueError:
             return False
-
-
-
 
 if __name__ == '__main__':
 
