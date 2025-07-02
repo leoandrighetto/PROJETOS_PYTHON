@@ -108,8 +108,7 @@ class Pessoa:
         for pessoa in cls.__todas_as_pessoas:
             if cpf == pessoa.cpf:
                 return pessoa.nome, pessoa.sobrenome, pessoa.idade, pessoa.cpf
-            else:
-                return "Cliente não existe"
+        
 
     @classmethod
     def buscar_conta(cls):
@@ -269,8 +268,7 @@ class Banco:
         for banco in cls.todos_os_bancos:
             if nro_banco == banco.nro_banco:
                 return banco.nome, banco.cnpj, banco.nro_banco
-            else:
-                return "Banco não existe"
+ 
 
     @classmethod
     def buscar_conta(cls):
@@ -296,12 +294,13 @@ class Banco:
 class ContaBancaria:
     todas_as_contas = []
 
-    def __init__(self, titular, banco, nro_conta, saldo, senha):
+    def __init__(self, titular, banco, nro_conta, senha, saldo: float = 0.0):
         self._titular = titular  # Objeto Pessoa
         self._banco = banco  # Objeto Banco
         self._nro_conta = nro_conta
+        self.senha = senha
         self._saldo = saldo
-        self._senha = senha
+        
 
     # Atributos protegidos por decoradores:
     def __str__(self):
@@ -422,7 +421,7 @@ class ContaBancaria:
                     if not conta:
 
                         if tipo_de_conta == 'corrente':
-                            conta_atual = ContaCorrente(pessoa, banco, dados_conta[2], 0.0, dados_conta[3],
+                            conta_atual = ContaCorrente(pessoa, banco, dados_conta[2], dados_conta[3], 0.0,
                                                         0.0)
 
                             ContaBancaria.adicionar_conta(conta_atual)
@@ -430,7 +429,7 @@ class ContaBancaria:
                             ContaCorrente.adicionar_conta_corrente(conta_atual)
 
                         if tipo_de_conta == 'poupanca':
-                            conta_atual = ContaPoupanca(pessoa, banco, dados_conta[2], 0.0, dados_conta[3],
+                            conta_atual = ContaPoupanca(pessoa, banco, dados_conta[2], dados_conta[3], 0.0,
                                                         0.0, 0.0)
 
                             ContaBancaria.adicionar_conta(conta_atual)
@@ -465,32 +464,26 @@ class ContaBancaria:
                 return False
 
     @classmethod
-    def verifica_senha_parametro(cls, conta, senha):
+    def verifica_senha(cls, conta, senha):
         # o usuario vai digitar verificar_senha(1234567890, 1234)
 
         # o programa vai separar a conta da senha
         # verificar se aconta existe, e comparar a senha com a senha da conta
 
-        flag_conta = False
-        flag_senha = False
-
         for contas in cls.todas_as_contas:
             if conta == contas.nro_conta:
 
-                flag_conta = True
-
                 if senha == contas.senha:
-                    flag_senha = True
+                    return True
+                else:
+                    return False
+                    
+        return False
 
-        if not flag_conta:
-            return f'Conta não existe'
-
-        else:
-            if not flag_senha:
-                return f'Senha incorreta'
+        
 
     @classmethod
-    def verifica_senha(cls):
+    def verifica_senha_input(cls):
 
         val = Validacoes()
 
@@ -508,40 +501,88 @@ class ContaBancaria:
                 if teste:
                     dados_validacao.append(dado)
                     break
-                    
+
                 else:
                     print(f'{dado} Inválido')
 
-        flag_conta = False
-        flag_senha = False
-
         for contas in cls.todas_as_contas:
-            if dados_validacao[0] == contas.nro_conta:
-                flag_conta = True
+            if conta == dados_validacao[0]:
 
-                if dados_validacao[1] == contas.senha:
-                    flag_senha = True
+                if senha == dados_validacao[1]:
+                    return True
+                else:
+                    return False
+                    
+        return False
 
-        if not flag_conta:
-            return f'Conta não existe'
+    @classmethod
+    def saque(cls, nr_conta, senha, valor):
+        
+        teste_senha = ContaBancaria.verifica_senha(nr_conta, senha)
+        
+        if teste_senha:
+            for conta in cls.todas_as_contas:
+                if nr_conta == conta.nro_conta:
+                    conta.saldo -= valor
+                    return (f'Saque Realizado!\n'
+                           f'Saldo atual: {conta.saldo}\n\n')
+            
+        return f'Saque não realizado, conta ou senhas inexistentes'
+        
+    @classmethod
+    def saque_input(cls, nr_conta, senha, valor):
+        
+        1nr_conta = input('Digite o nº da conta: ')
+        1senha = input('Digite a senha da conta: ')
+        
+        teste_senha = ContaBancaria.verifica_senha(1nr_conta, 1senha)
+        
+        if teste_senha:
+            for conta in cls.todas_as_contas:
+                if 1nr_conta == conta.nro_conta:
+                    conta.saldo -= valor
+                    return (f'Saque Realizado!\n'
+                           f'Saldo atual: {conta.saldo}\n\n')
+            
+        return f'Saque não realizado, conta ou senhas inexistentes'
+        
+    @classmethod 
+    def deposito(self, nr_conta, senha, valor):
+        
+        teste_senha = ContaBancaria.verifica_senha(nr_conta, senha)
+        
+        if teste_senha:
+            for conta in cls.todas_as_contas:
+                if nr_conta == conta.nro_conta:
+                    conta.saldo += valor
+                    return (f'Depósito Realizado!\n'
+                           f'Saldo atual: {conta.saldo}\n\n')
+            
+        return f'Depósito não realizado, conta ou senhas inexistentes'
 
-        if not flag_senha:
-            return f'Senha incorreta'
-
-        return f"Senha correta"
-
-    def saque(self):
-        pass
-
+    @classmethod
     def deposito(self):
-        pass
-
-
+        
+        1nr_conta = input('Digite o nº da conta: ')
+        1senha = input('Digite a senha da conta: ')
+        
+        teste_senha = ContaBancaria.verifica_senha(1nr_conta, 1senha)
+        
+        if teste_senha:
+            for conta in cls.todas_as_contas:
+                if 1nr_conta == conta.nro_conta:
+                    conta.saldo += valor
+                    return (f'Depósito Realizado!\n'
+                           f'Saldo atual: {conta.saldo}\n\n')
+            
+        return f'Depósito não realizado, conta ou senhas inexistentes'
+    
+    
 class ContaCorrente(ContaBancaria):
     contas_correntes = []
 
-    def __init__(self, titular, banco, nro_conta, saldo, senha, taxas_mensais):
-        super().__init__(titular, banco, nro_conta, saldo, senha)
+    def __init__(self, titular, banco, nro_conta,  senha, saldo, taxas_mensais: float = 0.0):
+        super().__init__(titular, banco, nro_conta, senha, saldo)
 
         self.__taxas_mensais = taxas_mensais
 
@@ -554,10 +595,6 @@ class ContaCorrente(ContaBancaria):
     def taxas_mensais(self, nova_taxas_mensais):
         self.__taxas_mensais = nova_taxas_mensais
 
-    # Métodos da Classe
-    @classmethod
-    def criar_conta_corrente(cls):
-        pass
 
     @classmethod
     def adicionar_conta_corrente(cls, nova_conta_corrente):
@@ -575,16 +612,30 @@ class ContaCorrente(ContaBancaria):
                 f'Nº da conta: {self.nro_conta}\n'
                 f'Salda: {self.saldo}\n'
                 f'Taxas Mensais: {self.taxas_mensais}\n')
-
-    def novo_mes(self):
-        pass
-
-
+    
+    @classmethod
+    def novo_mes(cls):
+        
+        nr_conta = input('informe o nº da conta')
+        
+        for conta in cls.contas_correntes:
+            if nr_conta == conta.nro_conta:
+                conta.taxas_mensais += 15.50
+                conta.saldo -= 15.50
+                
+                return (f'\nTaxa atualizada\n'
+                        f'Taxa atual: {conta.taxas_mensais}'
+                        f'Saldo atual: {conta.saldo}')
+                    
+        return f'Conta não encontrada'
+        
+        
+        
 class ContaPoupanca(ContaBancaria):
     contas_poupanca = []
 
-    def __init__(self, titular, banco, nro_conta, saldo, senha, rendimentos, saques_mensais):
-        super().__init__(titular, banco, nro_conta, saldo, senha)
+    def __init__(self, titular, banco, nro_conta, senha, saldo: float = 0.0, rendimentos: float = 0.0, saques_mensais: int = 0):
+        super().__init__(titular, banco, nro_conta, senha, saldo)
 
         self.__rendimentos = rendimentos
         self.__saques_mensais = saques_mensais
@@ -613,13 +664,13 @@ class ContaPoupanca(ContaBancaria):
             if nova_conta_poupanca not in cls.contas_poupanca:
                 cls.contas_poupanca.append(nova_conta_poupanca)
 
-    def info(self):
+    def __str__(self):
         return (f'\nINFORMAÇÕES SOBRE CONTA\n'
                 f'\nTitular: {self.titular.nome}\n'
                 f'Banco: {self.banco.nome}\n'
                 f'Nº da conta: {self.nro_conta}\n'
-                f'Salda: {self.saldo}\n'
-                f'Taxas Mensais: {self.rendimentos}\n'
+                f'Saldo: {self.saldo}R$\n'
+                f'Taxas Mensais: {self.rendimentos}R$\n'
                 f'Saques Mensais: {self.saques_mensais}\n')
 
     def novo_mes(self):
