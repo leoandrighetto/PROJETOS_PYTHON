@@ -1,12 +1,11 @@
 import re
 
-
 class Pessoa:
     __todas_as_pessoas = []
 
     __todas_as_contas = []
 
-    def __init__(self, nome, sobrenome, idade, cpf):
+    def __init__(self, nome, sobrenome, idade: int, cpf):
         self.nome = nome  # STRING
         self.sobrenome = sobrenome  # STRING
         self.idade = idade  # INT
@@ -55,16 +54,15 @@ class Pessoa:
 
         while True:
 
-            lista_de_pessoas = Pessoa.buscar_pessoa()
+            print('CADASTRO DE CLIENTE\n')
+
+            print(f'Ex. de CPF: 000.000.000-00 \n')
+
             val = Validacoes()
             validar_pessoa = {'Nome': val.validar_nome,
                               'Sobrenome': val.validar_sobrenome,
                               'Idade': val.validar_idade,
                               'CPF': val.validar_cpf}
-
-            print('CADASTRO DE CLIENTE\n')
-
-            print(f'Ex. de CPF: 000.000.000-00 \n')
 
             dados_pessoa = []
 
@@ -80,27 +78,16 @@ class Pessoa:
                     else:
                         print(f'{chave} inválido(a)')
 
-            nova_pessoa = Pessoa(dados_pessoa[0], dados_pessoa[1], dados_pessoa[2], dados_pessoa[3])
+            nova_pessoa = Pessoa(dados_pessoa[0], dados_pessoa[1], int(dados_pessoa[2]), dados_pessoa[3])
 
-            interface = Interface()
-            if not lista_de_pessoas:
-                lista_de_pessoas.append(nova_pessoa)
-                print('Cliente cadastrado com sucesso!')
-                print(lista_de_pessoas)
+            busca = Pessoa.buscar_cpf(dados_pessoa[3])
 
-                interface.menu()
-
+            if not busca:
+                cls.__todas_as_pessoas.append(nova_pessoa)
+                print('\nCliente Cadastrado.\n')
+                Interface().menu()
             else:
-                if nova_pessoa not in lista_de_pessoas:
-
-                    lista_de_pessoas.append(nova_pessoa)
-                    print('Cliente cadastrado com sucesso!')
-                    print(lista_de_pessoas)
-
-                    interface.menu()
-                    break
-                else:
-                    print('Cliente já existe')
+                print('Cliente já existe')
 
     @classmethod
     def buscar_cpf(cls, cpf):
@@ -108,7 +95,6 @@ class Pessoa:
         for pessoa in cls.__todas_as_pessoas:
             if cpf == pessoa.cpf:
                 return pessoa.nome, pessoa.sobrenome, pessoa.idade, pessoa.cpf
-        
 
     @classmethod
     def buscar_conta(cls):
@@ -121,7 +107,7 @@ class Pessoa:
                 f'CPF: {self.__cpf}'
                 f'Idade: {self.idade}')
 
-    def info_contas(self):  # IMPLEMENTAR TIPO DE CONTA
+    def info_contas(self):
         if self.__contas_bancarias:
             print(f'\nContas do titular {self.nome}\n')
             for conta in self.__contas_bancarias:
@@ -130,13 +116,23 @@ class Pessoa:
                         f'Nº da Conta: {conta.nro_conta}\n'
                         f'Saldo total: {conta.saldo:.2f}\n')
         else:
-            return f'Não existem contas cadastradas neste CPF.'
+            return f'Não existem conta cadastradas neste CPF.'
+
+    @classmethod
+    def listar_pessoas(cls):
+        print(f'\nPessoas cadastradas no sistema\n')
+        if cls.__todas_as_contas:
+
+            print(f'\nNome: {Pessoa.nome} {Pessoa.sobrenome}\n'
+                        f'CPF: {Pessoa.cpf}\n'
+                        f'Idade: {Pessoa.idade}')
+        print(f'\nNão existem pessoas cadastradas neste sistema.\n')
 
 
 class Banco:
-    todos_os_bancos = []
+    __todos_os_bancos = []
 
-    todas_contas_de_Banco = []  # TODAS AS CONTAS DE TODOS OS BANCOS, PRA BUSCA.
+    __todas_contas_de_Banco = []  # TODAS AS CONTAS DE TODOS OS BANCOS, PRA BUSCA.
 
     def __init__(self, nome, cnpj, nro_banco):
         self.__nome = nome
@@ -189,19 +185,17 @@ class Banco:
     def criar_banco(cls):
         # self,titular,banco,nro_conta,saldo,senha
 
-        while True:
+        print('CADASTRO DE BANCO\n')
 
-            lista_de_bancos = Banco.buscar_banco()
+        print(f'Ex. de CNPJ: " 00.000.000/0000-00 "\n'
+              f'Ex. de número de Banco: 0000 (4 dígitos)\n')
+
+        while True:
 
             val = Validacoes()
             validar_banco = {'Nome': val.validar_nome,
                              'CNPJ': val.validar_cnpj,
                              'Número': val.validar_nro_banco}
-
-            print('CADASTRO DE BANCO\n')
-
-            print(f'Ex. de CNPJ: " 00.000.000/0000-00 "\n'
-                  f'Ex. de número de Banco: 0000 (4 dígitos)\n')
 
             dados_banco = []
 
@@ -220,23 +214,16 @@ class Banco:
 
             novo_banco = Banco(dados_banco[0], dados_banco[1], dados_banco[2])
 
-            interface = Interface()
-            if not lista_de_bancos:
-                lista_de_bancos.append(novo_banco)
-                print('Banco cadastrado com sucesso!')
+            busca = Banco.buscar_banco(dados_banco[2])
 
-                interface.menu()
+            if not busca:
+                cls.__todos_os_bancos.append(novo_banco)
+                print('\nBanco cadastrado com sucesso!\n\n')
+
+                Interface().menu()
 
             else:
-                if novo_banco not in lista_de_bancos:
-
-                    lista_de_bancos.append(novo_banco)
-                    print('Banco cadastrado com sucesso!')
-
-                    interface.menu()
-                    break
-                else:
-                    print('Banco já existe')
+                print('Banco já existe')
 
     def info_banco(self):
         print(f"\nINFORMAÇÕES DO BANCO\n:")
@@ -247,13 +234,13 @@ class Banco:
     @classmethod
     def info_contas(cls):
 
-        if not cls.todas_contas_de_Banco:
+        if not cls.__todas_contas_de_Banco:
             print(f'\nNão existem contas cadastradas.\n')
             return Interface().menu()
         else:
             print('\nLISTA GERAL DE CONTAS:\n')
 
-            for conta in cls.todas_contas_de_Banco:
+            for conta in cls.__todas_contas_de_Banco:
                 print(f'\nTitular: {conta.Pessoa.nome}\n'
                       f'Nome do Banco: {conta.Banco.nome}\n'
                       f'Nº Conta: {conta.nro_conta}\n'
@@ -265,22 +252,21 @@ class Banco:
     @classmethod
     def buscar_banco(cls, nro_banco):
 
-        for banco in cls.todos_os_bancos:
+        for banco in cls.__todos_os_bancos:
             if nro_banco == banco.nro_banco:
                 return banco.nome, banco.cnpj, banco.nro_banco
- 
 
     @classmethod
     def buscar_conta(cls):
-        return cls.todas_contas_de_Banco
+        return cls.__todas_contas_de_Banco
 
     @classmethod
     def adicionar_conta(cls, nova_conta):
-        cls.todas_contas_de_Banco.append(nova_conta)
+        cls.__todas_contas_de_Banco.append(nova_conta)
 
     @classmethod
     def fechar_conta(cls):
-        return cls.todas_contas_de_Banco  #####################
+        return cls.__todas_contas_de_Banco  #####################
 
     def __eq__(self, other):
         if isinstance(other, Banco):
@@ -290,9 +276,23 @@ class Banco:
 
         return False
 
+    @classmethod
+    def listar_bancos(cls):
+        print(f'\nBancos cadastrados no sistema\n')
+
+        if cls.__todos_os_bancos:
+
+            print(f'\nNome: {Banco.nome} | CNPJ: {Banco.cnpj}\n'
+                    f'Nº do Banco: {Banco.nro_banco}')
+            Interface().menu()
+
+        else:
+            print( f'Não existem pessoas cadastradas neste sistema.')
+            Interface().menu()
+
 
 class ContaBancaria:
-    todas_as_contas = []
+    __todas_as_contas = []
 
     def __init__(self, titular, banco, nro_conta, senha, saldo: float = 0.0):
         self._titular = titular  # Objeto Pessoa
@@ -300,7 +300,6 @@ class ContaBancaria:
         self._nro_conta = nro_conta
         self.senha = senha
         self._saldo = saldo
-        
 
     # Atributos protegidos por decoradores:
     def __str__(self):
@@ -451,36 +450,39 @@ class ContaBancaria:
                 interface.menu()
 
     @classmethod
+    def listar_contas(cls):
+        print(f'\nCONTAS CADASTRADAS NO SISTEMA\n')
+
+        if cls.__todas_as_contas:
+
+            print(f'\nNº da Conta: {ContaBancaria.nro_conta}\n'
+                    f'Titular: {ContaBancaria.Pessoa.nome}\n')
+            Interface().menu()
+        print('\nNão há contas cadastradas neste sistema\n')
+
+
+    @classmethod
     def adicionar_conta(cls, nova_conta):
-        cls.todas_as_contas.append(nova_conta)
+        cls.__todas_as_contas.append(nova_conta)
 
     @classmethod
     def buscar_conta(cls, nro_conta):
-        for conta in cls.todas_as_contas:
+        for conta in cls.__todas_as_contas:
             if nro_conta == conta.nro_conta:
                 return "Conta Já existe"
 
-            else:
-                return False
+        return False
 
     @classmethod
     def verifica_senha(cls, conta, senha):
-        # o usuario vai digitar verificar_senha(1234567890, 1234)
 
-        # o programa vai separar a conta da senha
-        # verificar se aconta existe, e comparar a senha com a senha da conta
-
-        for contas in cls.todas_as_contas:
+        for contas in cls.__todas_as_contas:
             if conta == contas.nro_conta:
 
                 if senha == contas.senha:
                     return True
-                else:
-                    return False
-                    
-        return False
 
-        
+        return False
 
     @classmethod
     def verifica_senha_input(cls):
@@ -505,83 +507,115 @@ class ContaBancaria:
                 else:
                     print(f'{dado} Inválido')
 
-        for contas in cls.todas_as_contas:
-            if conta == dados_validacao[0]:
+        for conta in cls.__todas_as_contas:
+            if conta.nro_conta == dados_validacao[0]:
 
-                if senha == dados_validacao[1]:
+                if conta.senha == dados_validacao[1]:
                     return True
-                else:
-                    return False
-                    
+
         return False
 
     @classmethod
     def saque(cls, nr_conta, senha, valor):
-        
-        teste_senha = ContaBancaria.verifica_senha(nr_conta, senha)
-        
-        if teste_senha:
-            for conta in cls.todas_as_contas:
-                if nr_conta == conta.nro_conta:
-                    conta.saldo -= valor
-                    return (f'Saque Realizado!\n'
-                           f'Saldo atual: {conta.saldo}\n\n')
-            
-        return f'Saque não realizado, conta ou senhas inexistentes'
-        
-    @classmethod
-    def saque_input(cls, nr_conta, senha, valor):
-        
-        1nr_conta = input('Digite o nº da conta: ')
-        1senha = input('Digite a senha da conta: ')
-        
-        teste_senha = ContaBancaria.verifica_senha(1nr_conta, 1senha)
-        
-        if teste_senha:
-            for conta in cls.todas_as_contas:
-                if 1nr_conta == conta.nro_conta:
-                    conta.saldo -= valor
-                    return (f'Saque Realizado!\n'
-                           f'Saldo atual: {conta.saldo}\n\n')
-            
-        return f'Saque não realizado, conta ou senhas inexistentes'
-        
-    @classmethod 
-    def deposito(self, nr_conta, senha, valor):
-        
-        teste_senha = ContaBancaria.verifica_senha(nr_conta, senha)
-        
-        if teste_senha:
-            for conta in cls.todas_as_contas:
-                if nr_conta == conta.nro_conta:
-                    conta.saldo += valor
-                    return (f'Depósito Realizado!\n'
-                           f'Saldo atual: {conta.saldo}\n\n')
-            
-        return f'Depósito não realizado, conta ou senhas inexistentes'
+
+        try:
+            valor = float(valor)
+
+            if ContaBancaria.verifica_senha(nr_conta, senha):
+
+                for conta in cls.__todas_as_contas:
+
+                    if nr_conta == conta.nro_conta:
+                        conta.saldo -= valor
+
+                        return (f'Saque Realizado!\n'
+                                f'Saldo atual: {conta.saldo}\n\n')
+
+            return f'Saque não realizado, conta ou senhas inexistentes'
+
+
+        except ValueError:
+            return 'valor inválido'
 
     @classmethod
-    def deposito(self):
-        
-        1nr_conta = input('Digite o nº da conta: ')
-        1senha = input('Digite a senha da conta: ')
-        
-        teste_senha = ContaBancaria.verifica_senha(1nr_conta, 1senha)
-        
-        if teste_senha:
-            for conta in cls.todas_as_contas:
-                if 1nr_conta == conta.nro_conta:
-                    conta.saldo += valor
-                    return (f'Depósito Realizado!\n'
-                           f'Saldo atual: {conta.saldo}\n\n')
-            
-        return f'Depósito não realizado, conta ou senhas inexistentes'
-    
-    
+    def saque_input(cls):
+
+        nr_conta = input('Digite o nº da conta: ')
+        senha = input('Digite a senha da conta: ')
+
+        try:
+            valor = float(input('Digite o valor do despósito: '))
+
+            if ContaBancaria.verifica_senha(nr_conta, senha):
+
+                for conta in cls.__todas_as_contas:
+
+                    if nr_conta == conta.nro_conta:
+
+                        conta.saldo -= valor
+
+                        return (f'Saque Realizado!\n'
+                                f'Saldo atual: {conta.saldo:.2f}\n\n')
+
+            return f'Saque não realizado, conta ou senhas inexistentes'
+
+
+        except ValueError:
+            return 'valor inválido'
+
+    @classmethod
+    def deposito(cls, nr_conta, senha, valor: float):
+
+        try:
+            valor = float(valor)
+
+            if ContaBancaria.verifica_senha(nr_conta, senha):
+
+                for conta in cls.__todas_as_contas:
+
+                    if nr_conta == conta.nro_conta:
+                        conta.saldo += valor
+
+                        return (f'Depósito Realizado!\n'
+                                f'Saldo atual: {conta.saldo}\n\n')
+
+            return f'Depósito não realizado, conta ou senhas inexistentes'
+
+
+        except ValueError:
+            return 'valor inválido'
+
+    @classmethod
+    def deposito_input (cls):
+
+        nr_conta = input('Digite o nº da conta: ')
+        senha = input('Digite a senha da conta: ')
+
+        try:
+            valor = float(input('Digite o valor do despósito: '))
+
+            if ContaBancaria.verifica_senha(nr_conta, senha):
+
+                for conta in cls.__todas_as_contas:
+
+                    if nr_conta == conta.nro_conta:
+                        conta.saldo += valor
+
+                        return (f'Depósito Realizado!\n'
+                                f'Saldo atual: {conta.saldo}\n\n')
+
+            return f'Depósito não realizado, conta ou senhas inexistentes'
+
+
+        except ValueError:
+            return 'valor inválido'
+
+
 class ContaCorrente(ContaBancaria):
-    contas_correntes = []
 
-    def __init__(self, titular, banco, nro_conta,  senha, saldo, taxas_mensais: float = 0.0):
+    __contas_correntes = []
+
+    def __init__(self, titular, banco, nro_conta, senha, saldo, taxas_mensais: float = 15.50):
         super().__init__(titular, banco, nro_conta, senha, saldo)
 
         self.__taxas_mensais = taxas_mensais
@@ -595,15 +629,14 @@ class ContaCorrente(ContaBancaria):
     def taxas_mensais(self, nova_taxas_mensais):
         self.__taxas_mensais = nova_taxas_mensais
 
-
     @classmethod
     def adicionar_conta_corrente(cls, nova_conta_corrente):
 
-        if not cls.contas_correntes:
-            cls.contas_correntes.append(nova_conta_corrente)
+        if not cls.__contas_correntes:
+            cls.__contas_correntes.append(nova_conta_corrente)
         else:
-            if nova_conta_corrente not in cls.contas_correntes:
-                cls.contas_correntes.append(nova_conta_corrente)
+            if nova_conta_corrente not in cls.__contas_correntes:
+                cls.__contas_correntes.append(nova_conta_corrente)
 
     def info(self):
         return (f'\nINFORMAÇÕES SOBRE CONTA\n'
@@ -611,30 +644,30 @@ class ContaCorrente(ContaBancaria):
                 f'Banco: {self.banco.nome}\n'
                 f'Nº da conta: {self.nro_conta}\n'
                 f'Salda: {self.saldo}\n'
-                f'Taxas Mensais: {self.taxas_mensais}\n')
-    
+                f'Taxas Mensais: {self.taxas_mensais:.2f}\n')
+
     @classmethod
     def novo_mes(cls):
-        
-        nr_conta = input('informe o nº da conta')
-        
-        for conta in cls.contas_correntes:
-            if nr_conta == conta.nro_conta:
-                conta.taxas_mensais += 15.50
-                conta.saldo -= 15.50
-                
-                return (f'\nTaxa atualizada\n'
-                        f'Taxa atual: {conta.taxas_mensais}'
-                        f'Saldo atual: {conta.saldo}')
-                    
-        return f'Conta não encontrada'
-        
-        
-        
-class ContaPoupanca(ContaBancaria):
-    contas_poupanca = []
 
-    def __init__(self, titular, banco, nro_conta, senha, saldo: float = 0.0, rendimentos: float = 0.0, saques_mensais: int = 0):
+        nr_conta = input('informe o nº da conta')
+
+        for conta in cls.__contas_correntes:
+            if nr_conta == conta.nro_conta:
+                conta.saldo -= 15.50
+
+                return (f'\nTaxa atualizada\n'
+                        f'Taxa atual: {conta.taxas_mensais:.2f}'
+                        f'Saldo atual: {conta.saldo:.2f}')
+
+        return f'Conta não encontrada'
+
+
+class ContaPoupanca(ContaBancaria):
+
+    __contas_poupanca = []
+
+    def __init__(self, titular, banco, nro_conta, senha, saldo: float = 0.0, rendimentos: float = 0.5,
+                 saques_mensais: int = 3):
         super().__init__(titular, banco, nro_conta, senha, saldo)
 
         self.__rendimentos = rendimentos
@@ -658,11 +691,11 @@ class ContaPoupanca(ContaBancaria):
 
     @classmethod
     def adicionar_conta_poupanca(cls, nova_conta_poupanca):
-        if not cls.contas_poupanca:
-            cls.contas_poupanca.append(nova_conta_poupanca)
+        if not cls.__contas_poupanca:
+            cls.__contas_poupanca.append(nova_conta_poupanca)
         else:
-            if nova_conta_poupanca not in cls.contas_poupanca:
-                cls.contas_poupanca.append(nova_conta_poupanca)
+            if nova_conta_poupanca not in cls.__contas_poupanca:
+                cls.__contas_poupanca.append(nova_conta_poupanca)
 
     def __str__(self):
         return (f'\nINFORMAÇÕES SOBRE CONTA\n'
@@ -673,11 +706,82 @@ class ContaPoupanca(ContaBancaria):
                 f'Taxas Mensais: {self.rendimentos}R$\n'
                 f'Saques Mensais: {self.saques_mensais}\n')
 
-    def novo_mes(self):
-        pass
+    @classmethod
+    def novo_mes(cls):
 
-    def saque(self):
-        pass
+        nr_conta = input('informe o nº da conta')
+
+        for conta in cls.__contas_poupanca:
+            if nr_conta == conta.nro_conta:
+                saldo_calculado =  conta.saldo * (0.5 / 100)
+
+                conta.saldo += saldo_calculado
+                conta.saques_mensais = 3
+
+                return (f'\nNovo mês atualizado!\n'
+                        f'Saldo anterior: {conta.saldo - saldo_calculado:.2f}'
+                        f'Saldo atual (com rendimento de 0.5%): {conta.saldo:.2f}')
+
+        return f'Conta não encontrada'
+
+    @classmethod
+    def saque(cls, nr_conta, senha, valor):
+
+        try:
+            valor = float(valor)
+
+            if ContaBancaria.verifica_senha(nr_conta, senha):
+
+                for conta in cls.__contas_poupanca:
+
+                    if nr_conta == conta.nro_conta:
+
+                        if conta.saques_mensais > 0 and conta.saldo > 0:
+                            conta.saldo -= valor
+                            conta.saques_mensais -= 1
+
+                            return (f'Saque Realizado!\n'
+                                    f'Saldo atual: {conta.saldo}\n'
+                                    f'Qnt saques disponíveis: {conta.saque}\n\n')
+                        else:
+                            return 'Serviço de saque indisponível.'
+
+            return f'Saque não realizado, conta ou senhas inexistentes'
+
+
+        except ValueError:
+            return 'valor inválido'
+
+    @classmethod
+    def saque_input(cls):
+
+        nr_conta = input('Digite o nº da conta: ')
+        senha = input('Digite a senha da conta: ')
+
+        try:
+            valor = float(input('Digite o valor do saque: '))
+
+            if ContaBancaria.verifica_senha(nr_conta, senha):
+
+                for conta in cls.__contas_poupanca:
+
+                    if nr_conta == conta.nro_conta:
+
+                        if conta.saques_mensais > 0 and conta.saldo > 0:
+                            conta.saldo -= valor
+                            conta.saques_mensais -= 1
+
+                            return (f'Saque Realizado!\n'
+                                    f'Saldo atual: {conta.saldo}\n'
+                                    f'Qnt saques disponíveis: {conta.saque}\n\n')
+                        else:
+                            return 'Serviço de saque indisponível.'
+
+            return f'Saque não realizado, conta ou senhas inexistentes'
+
+
+        except ValueError:
+            return 'valor inválido'
 
 
 class Interface:
@@ -693,9 +797,9 @@ class Interface:
               f" 4 - Listar Bancos Cadastrados\n"
               f" 5 - Listar Pessoas Cadastradas\n"
               f" 6 - Listar Contas Cadastradas\n"
-              f" 8 - Verificar Senha\n"
-              f" 9 - Saque\n"
-              f"10 - Depósito\n")
+              f" 7 - Saque\n"
+              f" 8 - Depósito\n"
+              f" 9 - Simular novo mês\n")
 
         while True:
 
@@ -711,18 +815,61 @@ class Interface:
                         Pessoa.criar_pessoa()
 
                     case 3:
-                        self.cadastrar_conta()
+                        ContaBancaria.cadastrar_conta()
+
+                    case 4:
+                        Banco.listar_bancos()
+
+                    case 5:
+                        Pessoa.listar_pessoas()
+
+                    case 6:
+                        ContaBancaria.listar_contas()
+
+                    case 7:
+                        Interface.saque(self)
+
+                    case 8:
+                        Interface.novo_mes(self)
+
 
 
             except ValueError:
                 print('\nEntrada Inválida! Somente números inteiros.')
 
-    def listar_bancos(self):
-        # 1 - acessar a lista de bancos
-        # 2 - iterar sobre a lista
-        # 3 - retornar a lista usando um for.
-        pass
+    def saque(self):
+        while True:
 
+            print(f'\n1- Conta Corrente\n'
+                  f'2- Conta Poupança\n')
+
+            tipo = input('\nDigite o tipo de conta: ')
+
+            if tipo.lower() == "1":
+                ContaBancaria.saque_input()
+
+            elif tipo.lower() == "2":
+                ContaPoupanca.saque_input()
+
+            else:
+                print('INVÁLIDO')
+
+    def novo_mes(self):
+        while True:
+
+            print(f'\n1- Conta Corrente\n'
+                  f'2- Conta Poupança\n')
+
+            tipo = input('\nDigite o tipo de conta: ')
+
+            if tipo.lower() == "1":
+                ContaCorrente.novo_mes()
+
+            elif tipo.lower() == "2":
+                ContaPoupanca.novo_mes()
+
+            else:
+                print('INVÁLIDO')
 
 class Validacoes:
 
