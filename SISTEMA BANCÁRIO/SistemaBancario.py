@@ -3,8 +3,6 @@ import re
 class Pessoa:
     __todas_as_pessoas = []
 
-    __todas_as_contas = []
-
     def __init__(self, nome, sobrenome, idade: int, cpf):
         self.nome = nome  # STRING
         self.sobrenome = sobrenome  # STRING
@@ -96,10 +94,6 @@ class Pessoa:
             if cpf == pessoa.cpf:
                 return pessoa.nome, pessoa.sobrenome, pessoa.idade, pessoa.cpf
 
-    @classmethod
-    def buscar_conta(cls):
-        return cls.__todas_as_contas
-
     def info(self):
         return (f'\nCLIENTE\n'
                 f'Nome: {self.nome}'
@@ -120,15 +114,29 @@ class Pessoa:
 
     @classmethod
     def listar_pessoas(cls):
-        print(f'\nPessoas cadastradas no sistema\n')
-        if cls.__todas_as_contas:
 
-            print(f'\nNome: {Pessoa.nome} {Pessoa.sobrenome}\n'
-                        f'CPF: {Pessoa.cpf}\n'
-                        f'Idade: {Pessoa.idade}')
+        print(f'\nPessoas cadastradas no sistema\n')
+
+        if cls.__todas_as_pessoas:
+
+            for pessoa in cls.__todas_as_pessoas:
+
+                print(f'\nNome: {pessoa.nome} {pessoa.sobrenome}\n'
+                            f'CPF: {pessoa.cpf}\n'
+                            f'Idade: {pessoa.idade}')
         print(f'\nNão existem pessoas cadastradas neste sistema.\n')
 
+"""PARA SALVAR A LISTA PESSOAS NO CSV EU PRECISO
 
+> IDENTIFICAR O MARCADOR NO ARQUIVO QUE DETERMINA E DELIMITA
+ONDE ESTARÁ A LINHA QUE EU QUERO PREENCHER COM A PESSOA:
+
+            if linha_editada[0].strip().startswith("#"):
+
+
+> EDITAR A LINHA QUE EU QUERO SALVAR
+
+> SALVAR A LINHA CORRETAMENTE"""
 class Banco:
     __todos_os_bancos = []
 
@@ -426,6 +434,7 @@ class ContaBancaria:
                             ContaBancaria.adicionar_conta(conta_atual)
                             Banco.adicionar_conta(conta_atual)
                             ContaCorrente.adicionar_conta_corrente(conta_atual)
+                            pessoa.__contas_bancarias.append(conta_atual)
 
                         if tipo_de_conta == 'poupanca':
                             conta_atual = ContaPoupanca(pessoa, banco, dados_conta[2], dados_conta[3], 0.0,
@@ -434,6 +443,7 @@ class ContaBancaria:
                             ContaBancaria.adicionar_conta(conta_atual)
                             Banco.adicionar_conta(conta_atual)
                             ContaPoupanca.adicionar_conta_poupanca(conta_atual)
+                            pessoa.__contas_bancarias.append(conta_atual)
 
                         print('Conta criada!')
                         interface.menu()
@@ -784,6 +794,54 @@ class ContaPoupanca(ContaBancaria):
             return 'valor inválido'
 
 
+class Validacoes:
+
+    def validar_nome(self, valor):
+        return bool(re.fullmatch(r"[A-Z a-zÀ-ÿ\s]+", valor))
+        # letras de a a-z maiúsculas ou mínusculas e símbolos
+
+    def validar_sobrenome(self, valor):
+        return bool(re.fullmatch(r"[A-Za-zÀ-ÿ\s]+", valor))
+
+    def validar_idade(self, valor):
+        return valor.isdigit()
+
+    def validar_cpf(self, valor):
+        return re.fullmatch(r"[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}", valor)
+
+    def validar_senha(self, valor):
+        return re.fullmatch(r'[0-9]{4}', valor)
+
+    def validar_cnpj(self, valor):
+        return re.fullmatch(r'[0-9]{2}.[0-9]{3}.[0-9]{3}/[0-9]{4}-[0-9]{2}', valor)
+
+    def validar_nro_conta(self, valor):
+        if re.fullmatch(r'[0-9]{10}', valor):
+            return int(valor)
+
+    def validar_nro_banco(self, valor):
+         if re.fullmatch(r'[0-9]{4}', valor):
+            return int(valor)
+
+    def validar_saldo(self, valor):
+        try:
+            float(valor)
+            return True
+        except ValueError:
+            return False
+        
+        
+# 
+# class Estoque:
+# 
+#     def atualizar_estoque(self):
+# 
+#         with open ("banco_de_dados.csv", 'r', 'utf8') as arquivo:
+# 
+#             #le uma linha
+#             
+            
+            
 class Interface:
 
     def __init__(self):
@@ -827,10 +885,13 @@ class Interface:
                         ContaBancaria.listar_contas()
 
                     case 7:
-                        Interface.saque(self)
+                        self.saque()
 
                     case 8:
-                        Interface.novo_mes(self)
+                        ContaBancaria.deposito_input()
+
+                    case 9:
+                        self.novo_mes()
 
 
 
@@ -854,6 +915,7 @@ class Interface:
             else:
                 print('INVÁLIDO')
 
+
     def novo_mes(self):
         while True:
 
@@ -870,40 +932,6 @@ class Interface:
 
             else:
                 print('INVÁLIDO')
-
-class Validacoes:
-
-    def validar_nome(self, valor):
-        return bool(re.fullmatch(r"[A-Z a-zÀ-ÿ\s]+", valor))
-        # letras de a a-z maiúsculas ou mínusculas e símbolos
-
-    def validar_sobrenome(self, valor):
-        return bool(re.fullmatch(r"[A-Za-zÀ-ÿ\s]+", valor))
-
-    def validar_idade(self, valor):
-        return valor.isdigit()
-
-    def validar_cpf(self, valor):
-        return re.fullmatch(r"[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}", valor)
-
-    def validar_senha(self, valor):
-        return re.fullmatch(r'[0-9]{4}', valor)
-
-    def validar_cnpj(self, valor):
-        return re.fullmatch(r'[0-9]{2}.[0-9]{3}.[0-9]{3}/[0-9]{4}-[0-9]{2}', valor)
-
-    def validar_nro_conta(self, valor):
-        return re.fullmatch(r'[0-9]{10}', valor)
-
-    def validar_nro_banco(self, valor):
-        return re.fullmatch(r'[0-9]{4}', valor)
-
-    def validar_saldo(self, valor):
-        try:
-            float(valor)
-            return True
-        except ValueError:
-            return False
 
 
 if __name__ == '__main__':
