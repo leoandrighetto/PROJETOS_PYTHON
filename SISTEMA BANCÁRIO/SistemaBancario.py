@@ -1,7 +1,7 @@
 import re
 
 class Pessoa:
-    __todas_as_pessoas = []import re
+    __todas_as_pessoas = []
 
 
 class Pessoa:
@@ -88,6 +88,7 @@ class Pessoa:
 
                 cls.__todas_as_pessoas.append(nova_pessoa)
                 print('\nCliente Cadastrado.\n')
+                Estoque().atualizar_estoque()
                 Interface().menu()
 
             else:
@@ -367,12 +368,14 @@ class ContaBancaria:
     @classmethod
     def cadastrar_conta(cls):
 
+        print(f'\nCADASTRO DE CONTA')
+
         while True:
 
             print(f'\nEx. de CPF: 000.000.000-00 \n'
-                  f'Número de Banco deve conter 4 dígitos numéricos\n'
-                  f'Número da conta deve conter 10 digitos numéricos\n'
-                  f'A senha deve ser númerica e com 4 dígitos')
+                  f'Número de Banco: 4 dígitos numéricos\n'
+                  f'Número da conta: 5 digitos numéricos\n'
+                  f'A senha deve ser númerica e com 4 dígitos\n')
 
             # titular,banco,nro_conta,saldo,senha
             interface = Interface()
@@ -438,7 +441,11 @@ class ContaBancaria:
 
                             ContaBancaria.adicionar_conta(conta_atual)
                             Banco.adicionar_conta(conta_atual)
+                            banco.contas_bancarias = conta_atual
                             pessoa.contas_bancarias = conta_atual
+                            
+                            
+                            #Estoque().atualizar_estoque()
 
                         if tipo_de_conta == 'poupanca':
                             conta_atual = ContaPoupanca(pessoa, banco, dados_conta[2], dados_conta[3], 0.0,
@@ -448,6 +455,7 @@ class ContaBancaria:
                             Banco.adicionar_conta(conta_atual)
                             ContaPoupanca.adicionar_conta_poupanca(conta_atual)
                             pessoa.contas_bancarias = conta_atual
+                            #Estoque().atualizar_estoque()
 
                         print('Conta criada!')
                         interface.menu()
@@ -460,7 +468,7 @@ class ContaBancaria:
                     print('Banco não encontrado.')
                     interface.menu()
             else:
-                print('Pessoa não encontrada.')
+                print('\nCPF não identificado no sistema.')
                 interface.menu()
 
     @classmethod
@@ -468,10 +476,13 @@ class ContaBancaria:
         print(f'\nCONTAS CADASTRADAS NO SISTEMA\n')
 
         if cls.__todas_as_contas:
-            print(f'\nNº da Conta: {ContaBancaria.nro_conta}\n'
-                  f'Titular: {ContaBancaria.titular.nome}\n')
+            for conta in cls.__todas_as_contas:
+                print(f'\nBanco: {conta.banco.nome}'
+                      f'\nNº da Conta: {conta.nro_conta}\n'
+                  f'Titular: {conta.titular.nome} {conta.titular.sobrenome} \n'
+                      f'CPF: {titular.cpf}\n')
             Interface().menu()
-        print('\nNão há contas cadastradas neste sistema\n')
+        print('Não há contas cadastradas neste sistema\n')
 
     @classmethod
     def adicionar_conta(cls, nova_conta):
@@ -823,7 +834,7 @@ class Validacoes:
 
     @staticmethod
     def validar_nro_conta(valor):
-        if re.fullmatch(r'[0-9]{10}', valor):
+        if re.fullmatch(r'[0-9]{5}', valor):
             return int(valor)
 
     @staticmethod
@@ -846,47 +857,50 @@ class Validacoes:
 
 
 
-# class Estoque:
-#
-#     def atualizar_estoque(self):
-#
-#         with open ("banco_de_dados.txt", 'a', encoding = 'utf8') as arquivo:
-#
-#             lista_pessoas = Pessoa.retornar_todas_pessoas()
-#
-#             for pessoa in lista_pessoas: # acesso todas as pessoas.
-#
-#                 contas_pessoais = []
-#
-#                 for contas in pessoa.contas_bancarias: #acessa a conta de cada pessoa pra manipular
-#
-#                     if isinstance(contas, ContaCorrente):
-#
-#                         obj_b = contas.banco
-#
-#                         banco = f'Banco({obj_b.nome},{obj_b.cnpj},{obj_b.nro_banco})'
-#
-#                         titular = pessoa.cpf
-#
-#                         corrente = (f'ContaCorrente({titular},{banco},{contas.nro_conta},'
-#                                     f'{contas.senha},{contas.saldo},{float(contas.taxas_mensais)})')
-#
-#                         contas_pessoais.append(corrente)
-#
-#                     if isinstance(contas, ContaPoupanca):
-#                         obj_b = contas.banco
-#
-#                         banco = f'Banco({obj_b.nome},{obj_b.cnpj},{obj_b.nro_banco})'
-#
-#                         titular = pessoa.cpf
-#
-#                         poupanca = (f'ContaPoupanca({titular},{banco},{contas.nro_conta},{contas.senha},{contas.saldo},'
-#                                     f'{float(contas.rendimentos)},{int(contas.saques_mensais)})')
-#
-#                         contas_pessoais.append(poupanca)
-#
-#                     arquivo.write(f'#{pessoa.nome},{pessoa.sobrenome},{pessoa.cpf},{str(pessoa.idade)},##{";".join(contas_pessoais)}\n')
+class Estoque:
 
+    def atualizar_estoque(self):
+
+        with open ("banco_de_dados.txt", 'w', encoding = 'utf8') as arquivo:
+
+            lista_pessoas = Pessoa.retornar_todas_pessoas()
+
+            for pessoa in lista_pessoas: # acesso todas as pessoas.
+
+                contas_pessoais = []
+
+                if pessoa.contas_bancarias:
+
+                    for contas in pessoa.contas_bancarias: #acessa a conta de cada pessoa pra manipular
+
+                        if isinstance(contas, ContaCorrente):
+
+                            obj_b = contas.banco
+
+                            banco = f'Banco({obj_b.nome},{obj_b.cnpj},{obj_b.nro_banco})'
+
+                            titular = pessoa.cpf
+
+                            corrente = (f'ContaCorrente({titular},{banco},{contas.nro_conta},'
+                                        f'{contas.senha},{contas.saldo},{float(contas.taxas_mensais)})')
+
+                            contas_pessoais.append(corrente)
+
+                        if isinstance(contas, ContaPoupanca):
+                            obj_b = contas.banco
+
+                            banco = f'Banco({obj_b.nome},{obj_b.cnpj},{obj_b.nro_banco})'
+
+                            titular = pessoa.cpf
+
+                            poupanca = (f'ContaPoupanca({titular},{banco},{contas.nro_conta},{contas.senha},{contas.saldo},'
+                                        f'{float(contas.rendimentos)},{int(contas.saques_mensais)})')
+
+                            contas_pessoais.append(poupanca)
+
+                        arquivo.write(f'#{pessoa.nome},{pessoa.sobrenome},{pessoa.cpf},{str(pessoa.idade)},##{";".join(contas_pessoais)}\n')
+
+                arquivo.write(f'#{pessoa.nome},{pessoa.sobrenome},{pessoa.cpf},{str(pessoa.idade)}\n')
 
 
 class Interface:
