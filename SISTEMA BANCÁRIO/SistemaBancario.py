@@ -10,15 +10,6 @@ class Pessoa:
         self.__cpf = cpf  # STRING
         self.__contas_bancarias = []
 
-    def __eq__(self, other):
-        if isinstance(other, Pessoa):
-            return (self.nome == other.nome and
-                    self.sobrenome == other.sobrenome and
-                    self.idade == other.idade and
-                    self.cpf == other.cpf)
-
-        return False
-
     @property
     def cpf(self):
         return self.__cpf
@@ -103,7 +94,6 @@ class Pessoa:
             if pessoa.contas_bancarias:
                 for conta in pessoa.contas_bancarias:
                     if conta.nro_conta == novo_nro_conta:
-
                         return (f'\nNome do Banco: {conta.banco.nome}'
                                 f'Nº do Banco: {conta.banco.nro_banco}\n'
                                 f'Nº da Conta: {conta.nro_conta}\n'
@@ -127,11 +117,7 @@ class Pessoa:
 
     @classmethod
     def retornar_todas_pessoas(cls):
-
-        if cls.__todas_as_pessoas:
-            return cls.__todas_as_pessoas
-
-        return False
+        return cls.__todas_as_pessoas
 
 class Banco:
     __todos_os_bancos = []
@@ -221,7 +207,7 @@ class Banco:
                 cls.__todos_os_bancos.append(novo_banco)
 
                 print('\nBanco cadastrado com sucesso!\n')
-
+                Estoque().atualizar_estoque()
                 Interface().menu()
 
             else:
@@ -242,27 +228,32 @@ class Banco:
             Interface().menu()
 
     def info_banco(self):
-        print('\nINFORMAÇÕES DO BANCO:\n')
-        return (f'\nNome co Banco: {self.nome}\n'
+        print('INFORMAÇÕES DO BANCO:\n')
+        print(f'\nNome co Banco: {self.nome}\n'
                 f'Nº do Banco: {self.nro_banco}\n'
                 f'CNPJ: {self.cnpj}\n')
 
     @classmethod
     def info_contas(cls, busca_nro_banco):
-        print('CONTAS CADASTRADAS:\n')
+
         for banco in cls.__todos_os_bancos:
+
             if busca_nro_banco == banco.nro_banco:
+
                 if banco.contas_bancarias:
+
                     for conta in banco.contas_bancarias:
+
                         if isinstance(conta, ContaCorrente):
-                            print(conta.info())
+                            conta.info()
+
                         if isinstance(conta, ContaPoupanca):
-                            print(conta.info())
+                            conta.info()
 
                 else:
-                    return f'não há contas cadastradas'
+                    print(f'não há contas cadastradas')
             else:
-                return f'banco não encontrado'
+                print(f'banco não encontrado')
 
     @classmethod
     def buscar_banco(cls, nro_banco):
@@ -277,10 +268,8 @@ class Banco:
 
     @classmethod
     def retornar_todos_os_bancos(cls):
-        if cls.__todos_os_bancos:
-            return cls.__todos_os_bancos
-        else:
-            return False
+
+        return cls.__todos_os_bancos
 
 class ContaBancaria:
     __todas_as_contas = []
@@ -387,14 +376,18 @@ class ContaBancaria:
                                 banco.contas_bancarias = conta_atual
                                 pessoa.contas_bancarias = conta_atual
                                 print('Conta criada!')
+                                Estoque().atualizar_estoque()
                                 interface.menu()
 
                             elif tipo.lower() == "2":
                                 conta_atual = ContaPoupanca(pessoa, banco, dados_conta[2], dados_conta[3], 0.0,
                                                             0.0, 3)
                                 ContaBancaria.adicionar_conta(conta_atual)
-                                ContaPoupanca.adicionar_conta_poupanca(conta_atual)
+                                banco.contas_bancarias = conta_atual
                                 pessoa.contas_bancarias = conta_atual
+                                print('Conta criada!')
+                                Estoque().atualizar_estoque()
+                                interface.menu()
 
                             else:
                                 print('INVÁLIDO')
@@ -418,10 +411,10 @@ class ContaBancaria:
             for conta in cls.__todas_as_contas:
 
                 if isinstance(conta, ContaCorrente):
-                    print(conta.info())
+                    conta.info()
 
                 if isinstance(conta, ContaPoupanca):
-                    print(conta.info())
+                    conta.info()
             Interface().menu()
 
         else:
@@ -579,7 +572,7 @@ class ContaBancaria:
             return 'valor inválido'
 
     @classmethod
-    def retorna_conta(cls, conta = None):
+    def retorna_conta(cls, conta=None):
         if cls.__todas_as_contas:
 
             conta_formatada = []
@@ -590,14 +583,36 @@ class ContaBancaria:
                 titular = conta.titular.cpf
 
                 if isinstance(conta, ContaCorrente):
-                    conta_formatada.append(f'!!ContaCorrente({titular},#!{banco},{str(conta.nro_conta)},'
-                                f'{conta.senha},{str(conta.saldo)},{str(conta.taxas_mensais)})')
+                    conta_formatada.append(f'#CONTA ContaCorrente({titular},#BANCO {banco},{str(conta.nro_conta)},'
+                                           f'{conta.senha},{str(conta.saldo)},{str(conta.taxas_mensais)})\n')
 
                 if isinstance(conta, ContaPoupanca):
-                    conta_formatada.append(f'!!ContaPoupanca({titular},#!{banco},{str(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
-                        f'{str(conta.rendimentos)},{str(conta.saques_mensais)})')
+                    conta_formatada.append(
+                        f'#CONTA ContaPoupanca({titular},#BANCO {banco}{str(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
+                        f'{str(conta.rendimentos)},{str(conta.saques_mensais)})\n')
 
             return conta_formatada
+
+    @staticmethod
+    def retorna_contas_bancarias(contas_pessoais):
+
+        conta_formatada = []
+
+        for conta in contas_pessoais:
+
+            titular = conta.titular.cpf
+            banco = conta.banco.nro_banco
+
+            if isinstance(conta, ContaCorrente):
+                conta_formatada.append(f'#CONTA ContaCorrente({titular}\n'
+                                       f'#BANCO {str(banco)},{str(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
+                                       f'{str(conta.taxas_mensais)})\n')
+
+            if isinstance(conta, ContaPoupanca):
+                conta_formatada.append(f'#CONTA ContaPoupanca({titular}\n'
+                                       f'#BANCO {str(banco)},{str(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
+                                       f'{str(conta.rendimentos)},{str(conta.saques_mensais)})\n')
+        return conta_formatada
 
 class ContaCorrente(ContaBancaria):
 
@@ -615,18 +630,16 @@ class ContaCorrente(ContaBancaria):
     def taxas_mensais(self, nova_taxas_mensais):
         self.__taxas_mensais = nova_taxas_mensais
 
-
     def info(self):
-        return (f'INFORMAÇÕES SOBRE CONTA\n'
+        print(f'INFORMAÇÕES SOBRE CONTA\n'
                 f'\nTitular: {self.titular.nome}\n'
                 f'Banco: {self.banco.nome}\n'
                 f'Nº da conta: {self.nro_conta}\n'
-                f'Saldo: {self.saldo}\n'
+                f'Saldo: {self.saldo:.2f}\n'
                 f'Taxas Mensais: {self.taxas_mensais:.2f}\n')
 
     @classmethod
     def novo_mes(cls):
-
         nr_conta = input('informe o nº da conta')
 
         conta = ContaBancaria.buscar_conta(nr_conta)
@@ -675,7 +688,7 @@ class ContaPoupanca(ContaBancaria):
                 cls.__contas_poupanca.append(nova_conta_poupanca)
 
     def info(self):
-        return (f'Titular: {self.titular.nome}\n'
+        print(f'Titular: {self.titular.nome}\n'
                 f'Banco: {self.banco.nome}\n'
                 f'Nº da conta: {self.nro_conta}\n'
                 f'Saldo: {self.saldo}R$\n'
@@ -818,52 +831,98 @@ class Estoque:
 
             lista_pessoas = Pessoa.retornar_todas_pessoas()
 
-            contas_pessoais = []
+            contas_pessoais = set()
 
             for pessoa in lista_pessoas:  # acesso todas as pessoas.
 
                 if pessoa.contas_bancarias:
 
-                    for contas in pessoa.contas_bancarias:
+                    contas_pessoais = ContaBancaria.retorna_contas_bancarias(pessoa.contas_bancarias)
 
-                        tipo = ContaBancaria.retorna_conta(contas)
+                    arquivo.write(f'#PESSOA {pessoa.nome},{pessoa.sobrenome},'
+                                  f'{pessoa.cpf},{str(pessoa.idade)}\n'
+                                  f'{"".join(contas_pessoais)}\n')
 
-                        contas_pessoais.extend(tipo) #porque retorna uma lista
 
-                    arquivo.write(f'#{pessoa.nome},{pessoa.sobrenome},'
-                                  f'{pessoa.cpf},{str(pessoa.idade)},'
-                                  f'##{";".join(contas_pessoais)}\n')
                 else:
-
-                    arquivo.write(f'#{pessoa.nome},{pessoa.sobrenome},{pessoa.cpf},{str(pessoa.idade)}\n')
+                    arquivo.write(f'#PESSOA {pessoa.nome},{pessoa.sobrenome},{pessoa.cpf},{str(pessoa.idade)}\n\n')
 
             lista_bancos = Banco.retornar_todos_os_bancos()
-            
-            contas_banco = []
 
-            for banco in lista_bancos:
+            for bancos in lista_bancos:
 
-                if banco.contas_bancarias:
+                if bancos.contas_bancarias:
 
-                    for contas in banco.contas_bancarias:
+                    conta_formatada = []
 
-                        tipo = ContaBancaria.retorna_conta(contas)
-                        
-                        contas_banco.extend(tipo)
-                        
-                    arquivo.write(f'#!{banco.nome},{banco.cnpj},{str(banco.nro_banco)},##{";".join(contas_banco)}\n')
+                    for conta in bancos.contas_bancarias:
+
+                        titular = conta.titular.cpf
+                        banco = conta.banco.nro_banco
+
+                        if isinstance(conta, ContaCorrente):
+                            conta_formatada.append(f'#CONTA ContaCorrente({titular},'
+                                                   f'#BANCO {str(banco)},{str(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
+                                                   f'{str(conta.taxas_mensais)})\n')
+
+                        if isinstance(conta, ContaPoupanca):
+                            conta_formatada.append(f'#CONTA ContaPoupanca({titular},'
+                                                   f'#BANCO {str(banco)},{str(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
+                                                   f'{str(conta.rendimentos)},{str(conta.saques_mensais)})\n')
+
+                    arquivo.write(f'#BANCO {bancos.nome},{bancos.cnpj},{bancos.nro_banco},{"".join(conta_formatada)}\n')
 
                 else:
-                    arquivo.write(f'#!{banco.nome},{banco.cnpj},{str(banco.nro_banco)}\n')
+                    arquivo.write(f'#BANCO {bancos.nome},{bancos.cnpj},{bancos.nro_banco}\n')
 
 
-                lista_contas = ContaBancaria.retorna_conta()
+            lista_contas = ContaBancaria.retorna_conta()
 
-                if lista_contas:
+            if lista_contas:
 
-                    for conta in lista_contas:
+                for conta in lista_contas:
+                    arquivo.write(f'{conta}\n')
 
-                        arquivo.write(f'!!{";".join(conta)}')
+    @staticmethod
+    def carregar_estoque():
+
+        with open('banco_de_dados.txt', 'r', encoding = 'utf-8') as arquivo:
+
+            linhas = arquivo.readlines()
+
+            linhas_formatadas = linhas.replace(",","")
+
+
+
+    """Logica pra carregar o estoque:
+    1 Eu preciso identificar os marcadores de cada linha
+    2 Para casa marcador existe uma lista expecífica.
+    3 Preciso identificar para onde cada lista deve ir
+    4 formar a lógica de cada append
+    
+    1 LISTA PESSOAS:
+    
+        1 PRIMEIRA linha é objeto pessoa
+        2 SEGUNDA LINHA é lista (contas_bancarias pessoa)
+        
+    2 LISTA BANCOS:
+        
+        1 PRIMEIRA linha é objeto banco
+        2 SEGUNDA LINHA é lista (contas_bancarias bancos)
+        
+    3 LISTA DE CONTAS:
+        
+        1 VAI TUDO PRA LISTA DE CONTAS
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    """
 
 class Interface:
 
@@ -998,12 +1057,12 @@ class Interface:
         lista_bancos = Banco.buscar_banco(per)
 
         if lista_bancos:
-            print(lista_bancos.info_banco())
+            lista_bancos.info_banco()
             print(lista_bancos.info_contas(per))
             interface.menu()
 
         else:
-            return f'banco não encontrado'
+            print(f'banco não encontrado')
 
     @staticmethod
     def buscar_conta():
@@ -1018,6 +1077,7 @@ class Interface:
         else:
             print(f'\nconta não existe\n')
             interface.menu()
+
 
 if __name__ == '__main__':
     Interface().menu()
