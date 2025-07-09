@@ -1,5 +1,6 @@
 import re
 
+
 class Pessoa:
     __todas_as_pessoas = []
 
@@ -88,20 +89,6 @@ class Pessoa:
                 return pessoa
 
     @classmethod
-    def info_contas(cls, novo_nro_conta):
-
-        for pessoa in cls.__todas_as_pessoas:
-            if pessoa.contas_bancarias:
-                for conta in pessoa.contas_bancarias:
-                    if conta.nro_conta == novo_nro_conta:
-                        return (f'\nNome do Banco: {conta.banco.nome}'
-                                f'Nº do Banco: {conta.banco.nro_banco}\n'
-                                f'Nº da Conta: {conta.nro_conta}\n'
-                                f'Saldo total: {conta.saldo:.2f}\n')
-
-        return f'Não existem conta cadastradas neste CPF.'
-
-    @classmethod
     def listar_pessoas(cls):
 
         if cls.__todas_as_pessoas:
@@ -112,12 +99,14 @@ class Pessoa:
                 print(f'\nNome: {pessoa.nome} {pessoa.sobrenome}\n'
                       f'CPF: {pessoa.cpf}\n'
                       f'Idade: {pessoa.idade}\n')
+            Interface().menu()
         else:
             print(f'\nNão existem pessoas cadastradas neste sistema.\n')
 
     @classmethod
     def retornar_todas_pessoas(cls):
         return cls.__todas_as_pessoas
+
 
 class Banco:
     __todos_os_bancos = []
@@ -230,24 +219,21 @@ class Banco:
     def info_banco(self):
         print('INFORMAÇÕES DO BANCO:\n')
         print(f'\nNome co Banco: {self.nome}\n'
-                f'Nº do Banco: {self.nro_banco}\n'
-                f'CNPJ: {self.cnpj}\n')
+              f'Nº do Banco: {self.nro_banco}\n'
+              f'CNPJ: {self.cnpj}\n')
 
-    def info_contas(self,banco):
+    def info_contas(self, banco):
 
         print('CONTAS DO BANCO:\n')
-        if banco.contas_bancarias:
+        for conta in banco.contas_bancarias:
 
-            for conta in banco.contas_bancarias:
+            if isinstance(conta, ContaCorrente):
+                conta.info()
 
-                if isinstance(conta, ContaCorrente):
-                    conta.info()
+            if isinstance(conta, ContaPoupanca):
+                conta.info()
 
-                if isinstance(conta,ContaPoupanca):
-                    conta.info()
-
-        else:
-            return f'Banco não possui contas'
+        return f'Banco não possui contas'
 
     @classmethod
     def buscar_banco(cls, nro_banco):
@@ -259,19 +245,20 @@ class Banco:
     @classmethod
     def fechar_conta(cls):
         nro = input("Digite o número da conta que deseja fechar: ").strip()
-        conta = cls.buscar_conta(nro)
+        conta = ContaBancaria.buscar_conta(nro)
+
         if not conta:
             print("Conta não encontrada.")
             return
 
-        if conta in cls.__todas_as_contas:
-            cls.__todas_as_contas.remove(conta)
+        if conta:
+            ContaBancaria.todas_as_contas().remove(conta)
 
-        if conta.titular and conta in conta.titular.contas_bancarias:
-            conta.titular.contas_bancarias.remove(conta)
+            if conta.titular and conta in conta.titular.contas_bancarias:
+                conta.titular.contas_bancarias.remove(conta)
 
-        if conta.banco and conta in conta.banco.contas_bancarias:
-            conta.banco.contas_bancarias.remove(conta)
+            if conta.banco and conta in conta.banco.contas_bancarias:
+                conta.banco.contas_bancarias.remove(conta)
 
         print(f"Conta {nro} fechada com sucesso!")
 
@@ -282,15 +269,15 @@ class Banco:
 
         return cls.__todos_os_bancos
 
-class ContaBancaria:
 
+class ContaBancaria:
     __todas_as_contas = []
 
     def __init__(self, titular, banco, nro_conta: int, senha, saldo: float = 0.0):
         self._titular = titular  # Objeto Pessoa
         self._banco = banco  # Objeto Banco
         self._nro_conta = nro_conta
-        self.senha = senha
+        self._senha = senha
         self._saldo = saldo
 
     @property
@@ -447,13 +434,15 @@ class ContaBancaria:
                 return conta
 
     @classmethod
-    def verifica_senha(cls, conta, senha):
+    def verifica_senha(cls, teste_nro_conta, senha):
 
-        for contas in cls.__todas_as_contas:
-            if conta == contas.nro_conta:
+        for conta in cls.__todas_as_contas:
+            if teste_nro_conta == conta.nro_conta:
 
-                if senha == contas.senha:
-                    return f'\nSenha correta'
+                if senha == conta.senha:
+                    print("\nSENHA CORRETA\n")
+
+                    return conta
 
         return f'\nSenha inválida'
 
@@ -487,28 +476,27 @@ class ContaBancaria:
     @classmethod
     def saque(cls, nr_conta, senha, valor):
 
-        try:
-            valor = float(valor)
+        conta = ContaBancaria.verifica_senha(nr_conta, senha)
 
-            for conta in cls.__todas_as_contas:
+        if conta:
 
-                if nr_conta == conta.nro_conta:
-                    if conta.verifica_senha(nr_conta, senha):
-                        if valor > 0:
-                            conta.saldo -= valor
+            while True:
 
-                            return (f'Saque Realizado!\n'
-                                    f'Saldo atual: {conta.saldo:.2f}\n\n')
-                        else:
-                            return f'Apenas valores maiores que 0.'
+                try:
+                    valor = float(valor)
 
-                    else:
-                        return f'Senha incorreta'
+                    conta.saldo -= valor
 
-            return f'Conta não existe'
+                    print(f'Saque Realizado!\n'
+                          f'Saque anterior: {conta.saldo + valor}\n'
+                          f'Saldo atual: {conta.saldo:.2f}\n\n')
+                    return Interface().menu()
 
-        except ValueError:
-            return 'Valor inválido'
+                except ValueError:
+                    print('Valor inválido')
+
+        else:
+            return f'Saque não realizado, dados inválidos'
 
     @classmethod
     def saque_input(cls):
@@ -516,47 +504,51 @@ class ContaBancaria:
         nr_conta = input('Digite o nº da conta: ')
         senha = input('Digite a senha da conta: ')
 
-        try:
-            valor = float(input('Digite o valor do despósito: '))
+        conta = ContaBancaria.verifica_senha(nr_conta, senha)
 
-            if ContaBancaria.verifica_senha(nr_conta, senha):
+        if conta:
 
-                for conta in cls.__todas_as_contas:
+            while True:
 
-                    if nr_conta == conta.nro_conta:
+                try:
+                    valor = float(input('Digite o valor do saque: '))
+
+                    if valor:
                         conta.saldo -= valor
 
-                        return (f'Saque Realizado!\n'
-                                f'Saldo atual: {conta.saldo:.2f}\n\n')
+                        print(f'Saque Realizado!\n'
+                              f'Saldo atual: {conta.saldo:.2f}\n\n')
+                        return Interface().menu()
 
-            return f'Saque não realizado, conta ou senhas inexistentes'
+                except ValueError:
+                    print('Valor inválido')
 
-
-        except ValueError:
-            return 'valor inválido'
+        else:
+            return f'Saque não realizado, conta ou senhas inexistentes ou inválidas'
 
     @classmethod
     def deposito(cls, nr_conta, senha, valor: float):
 
-        try:
-            valor = float(valor)
+        conta = ContaBancaria.verifica_senha(nr_conta, senha)
 
-            if ContaBancaria.verifica_senha(nr_conta, senha):
+        if conta:
 
-                for conta in cls.__todas_as_contas:
+            while True:
 
-                    if nr_conta == conta.nro_conta:
-                        conta.saldo += valor
+                try:
+                    valor = float(valor)
 
-                        Estoque.atualizar_estoque()
-                        return (f'Depósito Realizado!\n'
-                                f'Saldo atual: {conta.saldo}\n\n')
+                    conta.saldo += valor
 
-            return f'Depósito não realizado, conta ou senhas inexistentes ou inválidos'
+                    print(f'Depósito Realizado!\n'
+                          f'Saldo atual: {conta.saldo:.2f}\n\n')
+                    return Interface().menu()
 
+                except ValueError:
+                    print('Valor inválido')
 
-        except ValueError:
-            return 'valor inválido'
+        else:
+            return f'Depósito não realizado, dados inválidos'
 
     @classmethod
     def deposito_input(cls):
@@ -564,25 +556,26 @@ class ContaBancaria:
         nr_conta = input('Digite o nº da conta: ')
         senha = input('Digite a senha da conta: ')
 
-        try:
-            valor = float(input('Digite o valor do despósito: '))
+        conta = ContaBancaria.verifica_senha(nr_conta, senha)
 
-            if ContaBancaria.verifica_senha(nr_conta, senha):
+        if conta:
 
-                for conta in cls.__todas_as_contas:
+            while True:
 
-                    if nr_conta == conta.nro_conta:
-                        conta.saldo += valor
+                try:
+                    valor = float(input('Digite o valor do depósito: '))
 
-                        Estoque.atualizar_estoque()
-                        return (f'Depósito Realizado!\n'
-                                f'Saldo atual: {conta.saldo}\n\n')
+                    conta.saldo += valor
 
-            return f'Depósito não realizado, conta ou senhas inexistentes'
+                    print(f'Depósito Realizado!\n'
+                          f'Saldo atual: {conta.saldo:.2f}\n\n')
+                    return Interface().menu()
 
+                except ValueError:
+                    print('valor inválido')
 
-        except ValueError:
-            return 'valor inválido'
+        else:
+            return f'Depósito não realizado, conta ou senhas inexistentes ou inválidas'
 
     @classmethod
     def retorna_conta(cls, conta=None):
@@ -626,6 +619,7 @@ class ContaBancaria:
                                        f'{str(conta.rendimentos)},{str(conta.saques_mensais)})\n')
         return conta_formatada
 
+
 class ContaCorrente(ContaBancaria):
 
     def __init__(self, titular, banco, nro_conta, senha, saldo, taxas_mensais: float = 15.50):
@@ -643,28 +637,33 @@ class ContaCorrente(ContaBancaria):
         self.__taxas_mensais = nova_taxas_mensais
 
     def info(self):
+
         print(f'> CONTA CORRENTE <\n'
-                f'\nTitular: {self.titular.nome}\n'
-                f'Banco: {self.banco.nome}\n'
-                f'Nº da conta: {self.nro_conta}\n'
-                f'Saldo: {self.saldo:.2f}\n'
-                f'Taxas Mensais: {self.taxas_mensais:.2f}\n')
-        
+              f'Titular: {self.titular.nome}\n'
+              f'Banco: {self.banco.nome}\n'
+              f'Nº da conta: {self.nro_conta}\n'
+              f'Saldo: {self.saldo:.2f}\n'
+              f'Taxas Mensais: {self.taxas_mensais:.2f}\n')
+
     @classmethod
     def novo_mes(cls):
-        nr_conta = input('informe o nº da conta: ')
+        while True:
+            nr_conta = input('informe o nº da conta: ')
 
-        conta = ContaBancaria.buscar_conta(nr_conta)
+            conta = ContaBancaria.buscar_conta(nr_conta)
 
-        if conta and isinstance(conta, ContaCorrente):
-            conta.saldo -= conta.taxas_mensais
+            if conta and isinstance(conta, ContaCorrente):
+                conta.saldo -= conta.taxas_mensais
 
-            Estoque.atualizar_estoque()
-            return (f'\nTaxa atualizada!\n'
-                    f'Taxa atual: {conta.taxas_mensais:.2f}\n'
-                    f'Saldo atual: {conta.saldo:.2f}\n')
+                print(f'\nTaxa atualizada!\n'
+                      f'Taxa anterior: {conta.saldo + conta.taxas_mensais:.2f}\n'
+                      f'Taxa atual: {conta.taxas_mensais:.2f}\n'
+                      f'Saldo atual: {conta.saldo:.2f}\n')
+                Interface().menu()
 
-        return f'Conta não encontrada'
+            else:
+                print(f'Conta não encontrada')
+
 
 class ContaPoupanca(ContaBancaria):
     __contas_poupanca = []
@@ -703,31 +702,34 @@ class ContaPoupanca(ContaBancaria):
     def info(self):
         print(f'> CONTA POUPANÇA <\n'
               f'Titular: {self.titular.nome}\n'
-                f'Banco: {self.banco.nome}\n'
-                f'Nº da conta: {self.nro_conta}\n'
-                f'Saldo: R${self.saldo:.2f}\n'
-                f'Rendimentos: R${self.rendimentos:.2f}\n'
-                f'Saques Mensais: {self.saques_mensais}\n')
+              f'Banco: {self.banco.nome}\n'
+              f'Nº da conta: {self.nro_conta}\n'
+              f'Saldo: R${self.saldo:.2f}\n'
+              f'Rendimentos: R${self.rendimentos:.2f}\n'
+              f'Saques Mensais: {self.saques_mensais}\n')
 
     @classmethod
     def novo_mes(cls):
 
-        nr_conta = input('informe o nº da conta: ')
-        conta = ContaBancaria.buscar_conta(nr_conta)
+        while True:
 
-        if conta and isinstance(conta, ContaPoupanca):
+            nr_conta = input('informe o nº da conta: ')
+            conta = ContaBancaria.buscar_conta(nr_conta)
+
+            if conta and isinstance(conta, ContaPoupanca):
                 saldo_calculado = conta.saldo * (0.5 / 100)
 
                 conta.saldo += saldo_calculado
                 conta.saques_mensais = 3
 
-                Estoque.atualizar_estoque()
-                return (f'\nNovo mês atualizado!\n'
-                        f'Saldo anterior: {conta.saldo - saldo_calculado:.2f}\n'
-                        f'Saldo atual (com rendimento de 0.5%): {conta.saldo:.2f}\n'
-                        f'Saques disponíveis: {conta.saques_mensais}')
+                print(f'\nNovo mês atualizado!\n'
+                      f'Saldo anterior: {conta.saldo - saldo_calculado:.2f}\n'
+                      f'Saldo atual (com rendimento de 0.5%): {conta.saldo:.2f}\n'
+                      f'Saques disponíveis: {conta.saques_mensais}')
+                Interface().menu()
 
-        return f'Conta não encontrada'
+            else:
+                print(f'Conta não encontrada')
 
     @classmethod
     def saque(cls, nr_conta, senha, valor):
@@ -735,23 +737,23 @@ class ContaPoupanca(ContaBancaria):
         try:
             valor = float(valor)
 
-            if ContaBancaria.verifica_senha(nr_conta, senha):
+            conta = ContaBancaria.verifica_senha(nr_conta, senha)
 
-                conta = ContaBancaria.buscar_conta(nr_conta)
+            if conta and isinstance(conta, ContaPoupanca):
 
-                if conta and isinstance(conta, ContaPoupanca):
+                if conta.saques_mensais > 0 and conta.saldo > 0:
+                    conta.saldo -= valor
+                    conta.saques_mensais -= 1
 
-                    if conta.saques_mensais > 0 and conta.saldo > 0:
-                        conta.saldo -= valor
-                        conta.saques_mensais -= 1
+                    print(f'Saque Realizado!\n'
+                          f'Saldo anterior: {conta.saldo + valor}\n'
+                          f'Saldo atual: {conta.saldo:.2f}\n'
+                          f'Qnt saques disponíveis: {conta.saques_mensais}\n\n')
+                    Interface().menu()
+                else:
+                    print('Serviço de saque indisponível.')
 
-                        return (f'Saque Realizado!\n'
-                                f'Saldo atual: {conta.saldo:.2f}\n'
-                                f'Qnt saques disponíveis: {conta.saques_mensais}\n\n')
-                    else:
-                        return 'Serviço de saque indisponível.'
-
-            return f'Saque não realizado, conta ou senhas inexistentes'
+            print(f'Saque não realizado, dados inválidos')
 
 
         except ValueError:
@@ -759,16 +761,15 @@ class ContaPoupanca(ContaBancaria):
 
     @classmethod
     def saque_input(cls):
+        while True:
 
-        nr_conta = input('Digite o nº da conta: ')
-        senha = input('Digite a senha da conta: ')
+            nr_conta = input('Digite o nº da conta: ')
+            senha = input('Digite a senha da conta: ')
 
-        try:
-            valor = float(input('Digite o valor do saque: '))
+            try:
+                valor = float(input('Digite o valor do saque: '))
 
-            if ContaBancaria.verifica_senha(nr_conta, senha):
-
-                conta = ContaBancaria.buscar_conta(nr_conta)
+                conta = ContaBancaria.verifica_senha(nr_conta, senha)
 
                 if conta and isinstance(conta, ContaPoupanca):
 
@@ -776,17 +777,19 @@ class ContaPoupanca(ContaBancaria):
                         conta.saldo -= valor
                         conta.saques_mensais -= 1
 
-                        return (f'Saque Realizado!\n'
-                                f'Saldo atual: {conta.saldo:.2f}\n'
-                                f'Qnt saques disponíveis: {conta.saques_mensais}\n\n')
+                        print(f'\nSaque Realizado!\n'
+                              f'Saldo anterior: {conta.saldo + valor}\n'
+                              f'Saldo atual: {conta.saldo:.2f}\n'
+                              f'Qnt saques disponíveis: {conta.saques_mensais}\n\n')
+                        Interface().menu()
                     else:
-                        return 'Serviço de saque indisponível.'
+                        print('\nServiço de saque indisponível.\n')
 
-            return f'Saque não realizado, conta ou senhas inexistentes'
+                print(f'\nSaque não realizado, dados inválidos\n')
 
+            except ValueError:
+                print('\nValor inválido!\n')
 
-        except ValueError:
-            return 'valor inválido'
 
 class Validacoes:
 
@@ -838,6 +841,7 @@ class Validacoes:
         except ValueError:
             return False
 
+
 class Estoque:
 
     @staticmethod
@@ -885,11 +889,11 @@ class Estoque:
                                                    f'{str(banco)},{str(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
                                                    f'{str(conta.rendimentos)},{str(conta.saques_mensais)})\n')
 
-                    arquivo.write(f'#BANCO {bancos.nome},{bancos.cnpj},{bancos.nro_banco},{"".join(conta_formatada)}\n')
+                    arquivo.write(
+                        f'#BANCO {bancos.nome},{bancos.cnpj},{bancos.nro_banco}\n{"".join(conta_formatada)}\n')
 
                 else:
-                    arquivo.write(f'#BANCO {bancos.nome},{bancos.cnpj},{bancos.nro_banco}\n')
-
+                    arquivo.write(f'#BANCO {bancos.nome},{bancos.cnpj},{bancos.nro_banco}\n\n')
 
             lista_contas = ContaBancaria.retorna_conta()
 
@@ -904,9 +908,36 @@ class Estoque:
         lista_pessoas = Pessoa.retornar_todas_pessoas()
         lista_contas = ContaBancaria.todas_as_contas()
 
-        with open('banco_de_dados.txt', 'r', encoding='utf-8') as arquivo:
-            linhas = arquivo.readlines()
+        lista_bancos.clear()
+        lista_pessoas.clear()
+        lista_contas.clear()
 
+        try:
+            with open('banco_de_dados.txt', 'r', encoding='utf-8') as arquivo:
+                linhas = arquivo.readlines()
+        except FileNotFoundError:
+            return
+
+        # Carregar todas as PESSOAS
+        i = 0
+        while i < len(linhas):
+            linha = linhas[i].strip()
+            if linha.startswith("#PESSOA"):
+                partes = linha[7:].split(",", 3)
+                nome = partes[0].strip()
+                sobrenome = partes[1].strip()
+                cpf = partes[2].strip()
+                idade = int(partes[3].strip())
+                pessoa = Pessoa(nome, sobrenome, idade, cpf)
+                lista_pessoas.append(pessoa)
+                i += 1
+                while i < len(linhas) and not (
+                        linhas[i].strip().startswith(("#BANCO", "#PESSOA", "#CONTA")) or linhas[i].strip() == ''):
+                    i += 1
+            else:
+                i += 1
+
+        # Carregar todos os BANCOS
         i = 0
         while i < len(linhas):
             linha = linhas[i].strip()
@@ -915,70 +946,84 @@ class Estoque:
                 nome = partes[0].strip()
                 cnpj = partes[1].strip()
                 nro_banco = partes[2].strip()
-
                 banco = Banco(nome, cnpj, nro_banco)
                 lista_bancos.append(banco)
-
                 i += 1
-                while i < len(linhas):
-                    linha_conta = linhas[i].strip()
-                    if linha_conta.startswith("#BANCO") or linha_conta.startswith("#PESSOA") or linha_conta == '':
-                        break
-
-                    if "ContaCorrente" in linha_conta:
-                        dados = linha_conta.replace("ContaCorrente(", "").replace(")", "").split(",")
-                        titular_cpf = dados[0].strip()
-                        nro_conta = dados[2].strip()
-                        senha = dados[3].strip()
-                        saldo = float(dados[4])
-                        taxas_mensais = float(dados[5])
-
-                        titular = Pessoa.buscar_cpf(titular_cpf)
-
-                        conta = ContaCorrente(titular, banco, nro_conta, senha, saldo, taxas_mensais)
-                        lista_contas.append(conta)
-                        banco.contas_bancarias.append(conta)
-
-                    elif "ContaPoupanca" in linha_conta:
-                        dados = linha_conta.replace("ContaPoupanca(", "").replace(")", "").split(",")
-                        titular_cpf = dados[0].strip()
-                        nro_conta = dados[2].strip()
-                        senha = dados[3].strip()
-                        saldo = float(dados[4])
-                        rendimentos = float(dados[5])
-                        saques_mensais = int(float(dados[6]))
-
-                        titular = Pessoa.buscar_cpf(titular_cpf)
-                        if titular is None:
-                            titular = Pessoa("Desconhecido", "", 0, titular_cpf)
-                            lista_pessoas.append(titular)
-
-                        conta = ContaPoupanca(titular, banco, nro_conta, senha, saldo, rendimentos, saques_mensais)
-                        lista_contas.append(conta)
-                        banco.contas_bancarias.append(conta)
-
+                while i < len(linhas) and not (
+                        linhas[i].strip().startswith(("#BANCO", "#PESSOA", "#CONTA")) or linhas[i].strip() == ''):
                     i += 1
-
             else:
                 i += 1
 
+        # Carregar todas as CONTAS e vincular
         i = 0
         while i < len(linhas):
             linha = linhas[i].strip()
-            if linha.startswith("#PESSOA"):
-                partes = linha[7:].split(",")
-                nome = partes[0].strip()
-                sobrenome = partes[1].strip()
-                cpf = partes[2].strip()
-                idade = int(partes[3].strip())
 
-                pessoa = Pessoa(nome, sobrenome, idade, cpf)
-                lista_pessoas.append(pessoa)
+            if linha.startswith("#BANCO"):
+                partes = linha[6:].split(",", 3)
+                banco_nro_atual = partes[2].strip()
+                banco_obj_atual = next((b for b in lista_bancos if b.nro_banco == banco_nro_atual), None)
 
                 i += 1
                 while i < len(linhas):
                     linha_conta = linhas[i].strip()
-                    if linha_conta.startswith("#BANCO") or linha_conta.startswith("#PESSOA") or linha_conta == '':
+                    if linha_conta.startswith(("#BANCO", "#PESSOA", "#CONTA")) or linha_conta == '':
+                        break
+
+                    if "ContaCorrente" in linha_conta:
+                        dados = linha_conta.replace("ContaCorrente(", "").replace(")", "").split(",")
+                        titular_cpf = dados[0].strip()
+                        nro_conta = dados[2].strip()
+                        senha = dados[3].strip()
+                        saldo = float(dados[4])
+                        taxas_mensais = float(dados[5])
+
+                        titular = Pessoa.buscar_cpf(titular_cpf)
+
+                        if titular and banco_obj_atual:
+                            conta_existente = next((c for c in lista_contas if
+                                                    c.nro_conta == nro_conta and c.banco.nro_banco == banco_obj_atual.nro_banco),
+                                                   None)
+                            if not conta_existente:
+                                conta = ContaCorrente(titular, banco_obj_atual, nro_conta, senha, saldo, taxas_mensais)
+                                lista_contas.append(conta)
+                                banco_obj_atual.contas_bancarias.append(conta)
+                                titular.contas_bancarias.append(conta)
+
+                    elif "ContaPoupanca" in linha_conta:
+                        dados = linha_conta.replace("ContaPoupanca(", "").replace(")", "").split(",")
+                        titular_cpf = dados[0].strip()
+                        nro_conta = dados[2].strip()
+                        senha = dados[3].strip()
+                        saldo = float(dados[4])
+                        rendimentos = float(dados[5])
+                        saques_mensais = int(float(dados[6]))
+
+                        titular = Pessoa.buscar_cpf(titular_cpf)
+
+                        if titular and banco_obj_atual:
+                            conta_existente = next((c for c in lista_contas if
+                                                    c.nro_conta == nro_conta and c.banco.nro_banco == banco_obj_atual.nro_banco),
+                                                   None)
+                            if not conta_existente:
+                                conta = ContaPoupanca(titular, banco_obj_atual, nro_conta, senha, saldo, rendimentos,
+                                                      saques_mensais)
+                                lista_contas.append(conta)
+                                banco_obj_atual.contas_bancarias.append(conta)
+                                titular.contas_bancarias.append(conta)
+                    i += 1
+                continue
+
+            if linha.startswith("#PESSOA"):
+                partes = linha[7:].split(",", 3)
+                cpf_atual = partes[2].strip()
+                pessoa_obj_atual = next((p for p in lista_pessoas if p.cpf == cpf_atual), None)
+
+                i += 1
+                while i < len(linhas):
+                    linha_conta = linhas[i].strip()
+                    if linha_conta.startswith(("#BANCO", "#PESSOA", "#CONTA")) or linha_conta == '':
                         break
 
                     if "ContaCorrente" in linha_conta:
@@ -990,22 +1035,16 @@ class Estoque:
                         taxas_mensais = float(dados[5])
 
                         banco_obj = next((b for b in lista_bancos if b.nro_banco == banco_nro), None)
-                        if banco_obj is None:
-                            banco_obj = Banco("Desconhecido", "000.000.000/0000-00", banco_nro)
-                            lista_bancos.append(banco_obj)
 
-                        conta_obj = next(
-                            (c for c in banco_obj.contas_bancarias if c.nro_conta == nro_conta and c.senha == senha),
-                            None)
-
-                        if conta_obj:
-                            conta_obj.titular = pessoa
-                        else:
-                            conta_obj = ContaCorrente(pessoa, banco_obj, nro_conta, senha, saldo, taxas_mensais)
-                            banco_obj.contas_bancarias.append(conta_obj)
-                            lista_contas.append(conta_obj)
-
-                        pessoa.contas_bancarias.append(conta_obj)
+                        if pessoa_obj_atual and banco_obj:
+                            conta_existente = next((c for c in lista_contas if
+                                                    c.nro_conta == nro_conta and c.banco.nro_banco == banco_nro), None)
+                            if not conta_existente:
+                                conta = ContaCorrente(pessoa_obj_atual, banco_obj, nro_conta, senha, saldo,
+                                                      taxas_mensais)
+                                lista_contas.append(conta)
+                                banco_obj.contas_bancarias.append(conta)
+                                pessoa_obj_atual.contas_bancarias.append(conta)
 
                     elif "ContaPoupanca" in linha_conta:
                         dados = linha_conta.replace("ContaPoupanca(", "").replace(")", "").split(",")
@@ -1017,28 +1056,61 @@ class Estoque:
                         saques_mensais = int(float(dados[6]))
 
                         banco_obj = next((b for b in lista_bancos if b.nro_banco == banco_nro), None)
-                        if banco_obj is None:
-                            banco_obj = Banco("Desconhecido", "000.000.000/0000-00", banco_nro)
-                            lista_bancos.append(banco_obj)
 
-                        conta_obj = next(
-                            (c for c in banco_obj.contas_bancarias if c.nro_conta == nro_conta and c.senha == senha),
-                            None)
-
-                        if conta_obj:
-                            conta_obj.titular = pessoa
-                        else:
-                            conta_obj = ContaPoupanca(pessoa, banco_obj, nro_conta, senha, saldo, rendimentos,
+                        if pessoa_obj_atual and banco_obj:
+                            conta_existente = next((c for c in lista_contas if
+                                                    c.nro_conta == nro_conta and c.banco.nro_banco == banco_nro), None)
+                            if not conta_existente:
+                                conta = ContaPoupanca(pessoa_obj_atual, banco_obj, nro_conta, senha, saldo, rendimentos,
                                                       saques_mensais)
-                            banco_obj.contas_bancarias.append(conta_obj)
-                            lista_contas.append(conta_obj)
-
-                        pessoa.contas_bancarias.append(conta_obj)
-
+                                lista_contas.append(conta)
+                                banco_obj.contas_bancarias.append(conta)
+                                pessoa_obj_atual.contas_bancarias.append(conta)
                     i += 1
+                continue
 
-            else:
-                i += 1
+            if linha.startswith("#CONTA"):
+                match_conta_tipo = re.match(r"#CONTA\s(ContaCorrente|ContaPoupanca)\((.*)\)", linha)
+                if match_conta_tipo:
+                    tipo_conta = match_conta_tipo.group(1)
+                    conteudo_conta = match_conta_tipo.group(2)
+
+                    match_dados_conta = re.match(r"([^,]+),Banco\(([^,]+),([^,]+),([^)]+)\),(.*)", conteudo_conta)
+                    if match_dados_conta:
+                        cpf_titular = match_dados_conta.group(1).strip()
+                        banco_nro_str = match_dados_conta.group(4).strip()
+                        demais_dados_str = match_dados_conta.group(5).strip()
+
+                        titular = Pessoa.buscar_cpf(cpf_titular)
+                        banco_obj = next((b for b in lista_bancos if b.nro_banco == banco_nro_str), None)
+
+                        if titular and banco_obj:
+                            dados_conta_lista = [d.strip() for d in demais_dados_str.split(",")]
+                            nro_conta = dados_conta_lista[0]
+                            senha = dados_conta_lista[1]
+                            saldo = float(dados_conta_lista[2])
+
+                            conta_existente = next((c for c in lista_contas if
+                                                    c.nro_conta == nro_conta and c.banco.nro_banco == banco_nro_str),
+                                                   None)
+                            if not conta_existente:
+                                if tipo_conta == "ContaCorrente":
+                                    taxas_mensais = float(dados_conta_lista[3])
+                                    conta = ContaCorrente(titular, banco_obj, nro_conta, senha, saldo, taxas_mensais)
+                                elif tipo_conta == "ContaPoupanca":
+                                    rendimentos = float(dados_conta_lista[3])
+                                    saques_mensais = int(float(dados_conta_lista[4]))
+                                    conta = ContaPoupanca(titular, banco_obj, nro_conta, senha, saldo, rendimentos,
+                                                          saques_mensais)
+
+                                if conta:
+                                    lista_contas.append(conta)
+                                    titular.contas_bancarias.append(conta)
+                                    banco_obj.contas_bancarias.append(conta)
+            i += 1
+        else:
+            i += 1
+
 
 class Interface:
 
@@ -1047,19 +1119,20 @@ class Interface:
 
     def menu(self):
 
-        print(f"\n 1 - Cadastrar Banco\n"
-              f" 2 - Buscar Banco\n"
-              f" 3 - Cadastrar Cliente\n"
-              f" 4 - Buscar Cliente\n"
-              f" 5 - Cadastrar Conta\n"
-              f" 6 - Buscar Conta\n\n"
-              f" 7 - Listar Bancos Cadastrados\n"
-              f" 8 - Listar Pessoas Cadastradas\n"
-              f" 9 - Listar Contas Cadastradas\n\n"
-              f" 10 - Sacar\n"
-              f" 11 - Depositar\n"
-              f" 12 - Simular novo mês\n\n"
-              f" 13 - Encerrar Sistema e Atualizar estoque\n")
+        print(f"\n  1 - Cadastrar Banco\n"
+              f"  2 - Buscar Banco\n"
+              f"  3 - Cadastrar Cliente\n"
+              f"  4 - Buscar Cliente\n"
+              f"  5 - Cadastrar Conta\n"
+              f"  6 - Fechar Conta\n"
+              f"  7 - Buscar Conta\n\n"
+              f"  8 - Listar Bancos Cadastrados\n"
+              f"  9 - Listar Pessoas Cadastradas\n"
+              f" 10 - Listar Contas Cadastradas\n\n"
+              f" 11 - Sacar\n"
+              f" 12 - Depositar\n"
+              f" 13 - Simular novo mês\n\n"
+              f" 14 - Atualizar estoque\n")
 
         while True:
 
@@ -1084,28 +1157,31 @@ class Interface:
                         ContaBancaria.cadastrar_conta()
 
                     case 6:
-                        self.buscar_conta()
+                        Banco.fechar_conta()
 
                     case 7:
-                        Banco.listar_bancos()
+                        self.buscar_conta()
 
                     case 8:
-                        Pessoa.listar_pessoas()
+                        Banco.listar_bancos()
 
                     case 9:
-                        ContaBancaria.listar_contas()
+                        Pessoa.listar_pessoas()
 
                     case 10:
-                        self.saque()
+                        ContaBancaria.listar_contas()
 
                     case 11:
-                        ContaBancaria.deposito_input()
+                        self.saque()
 
                     case 12:
-                        self.novo_mes()
+                        ContaBancaria.deposito_input()
 
                     case 13:
-                        self.encerrar_sistema()
+                        self.novo_mes()
+
+                    case 14:
+                        self.atualizar_estoque()
 
 
 
@@ -1114,21 +1190,20 @@ class Interface:
 
     @staticmethod
     def saque():
-        while True:
 
-            print(f'\n1- Conta Corrente\n'
-                  f'2- Conta Poupança\n')
+        print(f'\n1- Conta Corrente\n'
+              f'2- Conta Poupança\n')
 
-            tipo = input('\nDigite o tipo de conta: ')
+        tipo = input('\nDigite o tipo de conta: ')
 
-            if tipo.lower() == "1":
-                ContaBancaria.saque_input()
+        if tipo.lower() == "1":
+            ContaBancaria.saque_input()
 
-            elif tipo.lower() == "2":
-                ContaPoupanca.saque_input()
+        elif tipo.lower() == "2":
+            ContaPoupanca.saque_input()
 
-            else:
-                print('INVÁLIDO')
+        else:
+            print('INVÁLIDO')
 
     @staticmethod
     def novo_mes():
@@ -1140,10 +1215,11 @@ class Interface:
             tipo = input('\nDigite o tipo de conta: ')
 
             if tipo.lower() == "1":
-                ContaCorrente.novo_mes()
+
+                return ContaCorrente.novo_mes()
 
             elif tipo.lower() == "2":
-                ContaPoupanca.novo_mes()
+                return ContaPoupanca.novo_mes()
 
             else:
                 print('INVÁLIDO')
@@ -1156,13 +1232,18 @@ class Interface:
         print(f'\nBusca de cliente\n'
               f'Exemplo de CPF: 000.000.000-00\n\n')
 
-        per = input('Digite o cpf do cliente: ')
+        cpf = input('Digite o cpf do cliente: ')
 
-        pessoa = Pessoa.buscar_cpf(per)
+        pessoa = Pessoa.buscar_cpf(cpf)
 
         if pessoa:
             print(pessoa.info())
-            print(pessoa.info_contas(per))
+            if pessoa.contas_bancarias:
+                for conta in pessoa.contas_bancarias:
+                    if isinstance(conta, ContaCorrente):
+                        conta.info()
+                    if isinstance(conta, ContaPoupanca):
+                        conta.info()
             interface.menu()
 
         else:
@@ -1205,15 +1286,19 @@ class Interface:
             interface.menu()
 
     @staticmethod
-    def encerrar_sistema():
+    def atualizar_estoque():
+
+        interface = Interface()
+
         Estoque.atualizar_estoque()
-        print(f'\nOBRIGADO\n')
+        print(f'\nESTOQUE ATUALIZADO\n')
+        interface.menu()
 
 
 if __name__ == '__main__':
     Estoque.carregar_estoque()
 
-    #MÉTODO VALIDAR SENHA CLASSE CONTA BANCÁRIA:
+    # MÉTODO VALIDAR SENHA CLASSE CONTA BANCÁRIA:
 
     # conta = ContaBancaria
 
@@ -1222,7 +1307,7 @@ if __name__ == '__main__':
     # print(conta.verifica_senha_input())
     # print()
 
-    #MÉTODO DEPÓSITO E SAQUE DA CLASSE CONTA BANCÁRIA:
+    # MÉTODO DEPÓSITO E SAQUE DA CLASSE CONTA BANCÁRIA (corrente):
 
     # print(conta.deposito("54321","4321",50.00))
     # print()
@@ -1232,12 +1317,12 @@ if __name__ == '__main__':
     # print()
     # print(conta.saque_input())
 
-    #MÉTODO NOVO_MES CONTA CORRENTE (nro_conta = 54321)
+    # MÉTODO NOVO_MES CONTA CORRENTE (nro_conta = 54321)
 
     # print(ContaCorrente.novo_mes())
     # print()
 
-    #MÉTODO NOVO_MES CONTA POUPANÇA (EXEMPLO Nro_conta: 54322 senha: 4322)
+    # MÉTODO NOVO_MES CONTA POUPANÇA (EXEMPLO Nro_conta: 54322 senha: 4322)
 
     # print(ContaPoupanca.novo_mes())
     # print()
