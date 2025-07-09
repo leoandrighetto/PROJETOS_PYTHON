@@ -1,3 +1,5 @@
+#########
+
 import re
 
 
@@ -985,6 +987,7 @@ class Estoque:
                                 lista_contas.append(conta)
                                 titular.contas_bancarias.append(conta)
                                 banco.contas_bancarias.append(conta)
+
 
 class Interface:
 
