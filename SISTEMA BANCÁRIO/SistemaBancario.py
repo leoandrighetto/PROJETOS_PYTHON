@@ -222,7 +222,8 @@ class Banco:
               f'Nº do Banco: {self.nro_banco}\n'
               f'CNPJ: {self.cnpj}\n')
 
-    def info_contas(self, banco):
+    @staticmethod
+    def info_contas( banco):
 
         print('CONTAS DO BANCO:\n')
         for conta in banco.contas_bancarias:
@@ -244,25 +245,31 @@ class Banco:
 
     @classmethod
     def fechar_conta(cls):
-        nro = int(input("Digite o número da conta que deseja fechar: ").strip())
-        conta = ContaBancaria.buscar_conta(nro)
+        while True:
+            try:
+                nro = int(input("Digite o número da conta que deseja fechar: ").strip())
+                conta = ContaBancaria.buscar_conta(nro)
 
-        if not conta:
-            print("Conta não encontrada.")
-            return
+                if not conta:
+                    print("Conta não encontrada.")
+                    return
 
-        if conta:
-            ContaBancaria.todas_as_contas().remove(conta)
+                if conta:
+                    ContaBancaria.todas_as_contas().remove(conta)
 
-            if conta.titular and conta in conta.titular.contas_bancarias:
-                conta.titular.contas_bancarias.remove(conta)
+                    if conta.titular and conta in conta.titular.contas_bancarias:
+                        conta.titular.contas_bancarias.remove(conta)
 
-            if conta.banco and conta in conta.banco.contas_bancarias:
-                conta.banco.contas_bancarias.remove(conta)
+                    if conta.banco and conta in conta.banco.contas_bancarias:
+                        conta.banco.contas_bancarias.remove(conta)
 
-        print(f"Conta {nro} fechada com sucesso!")
+                print(f"\nConta {nro} fechada com sucesso!\n")
 
-        Estoque.atualizar_estoque()
+                Estoque.atualizar_estoque()
+                Interface().menu()
+
+            except ValueError:
+                print('\nNº da conta inválido\n')
 
     @classmethod
     def retornar_todos_os_bancos(cls):
@@ -448,17 +455,23 @@ class ContaBancaria:
     @classmethod
     def verifica_senha_input(cls):
 
-        teste_nro_conta = int(input('Nº da Conta: '))
-        senha = input('Senha: ')
+        while True:
 
-        for conta in cls.__todas_as_contas:
-            if teste_nro_conta == conta.nro_conta:
+            try:
 
-                if senha == conta.senha:
-                    print("\nSENHA CORRETA\n")
+                teste_nro_conta = int(input('Nº da Conta: '))
+                senha = input('Senha: ')
 
-                    return conta
-        return None
+                for conta in cls.__todas_as_contas:
+                    if teste_nro_conta == conta.nro_conta:
+
+                        if senha == conta.senha:
+                            print("\nSENHA CORRETA\n")
+                            return conta
+                return None
+
+            except ValueError:
+                print('\nNº da conta inválido\n')
 
     @classmethod
     def saque(cls, nr_conta, senha, valor):
@@ -537,32 +550,41 @@ class ContaBancaria:
     @classmethod
     def deposito_input(cls):
 
-        nr_conta = int(input('Digite o nº da conta: '))
-        senha = input('Digite a senha da conta: ')
+        while True:
 
-        conta = ContaBancaria.verifica_senha(nr_conta, senha)
+            try:
 
-        if conta:
+                nr_conta = int(input('Digite o nº da conta: '))
+                senha = input('Digite a senha da conta: ')
 
-            while True:
+                conta = ContaBancaria.verifica_senha(nr_conta, senha)
 
-                try:
-                    valor = float(input('Digite o valor do depósito: '))
+                if conta:
 
-                    conta.saldo += valor
+                    while True:
 
-                    print(f'Depósito Realizado!\n'
-                          f'Saldo atual: {conta.saldo:.2f}\n\n')
-                    return Interface().menu()
+                        try:
+                            valor = float(input('Digite o valor do depósito: '))
 
-                except ValueError:
-                    print('valor inválido')
+                            conta.saldo += valor
 
-        else:
-            return f'Depósito não realizado, conta ou senhas inexistentes ou inválidas'
+                            print(f'Depósito Realizado!\n'
+                                  f'Saldo atual: {conta.saldo:.2f}\n\n')
+                            return Interface().menu()
+
+                        except ValueError:
+                            print('\nValor inválido\n')
+
+                else:
+                    return f'\nDepósito não realizado, dados inválidos\n'
+
+            except ValueError:
+                print(f'\nNº da conta inválido.\n')
+
+
 
     @classmethod
-    def retorna_conta(cls, conta=None):
+    def retorna_conta(cls):
 
         conta_formatada = []
         for conta in cls.__todas_as_contas:
@@ -632,21 +654,24 @@ class ContaCorrente(ContaBancaria):
     @classmethod
     def novo_mes(cls):
         while True:
-            nr_conta = int(input('informe o nº da conta: '))
+            try:
+                nr_conta = int(input('informe o nº da conta: '))
 
-            conta = ContaBancaria.buscar_conta(nr_conta)
+                conta = ContaBancaria.buscar_conta(nr_conta)
 
-            if conta and isinstance(conta, ContaCorrente):
-                conta.saldo -= conta.taxas_mensais
+                if conta and isinstance(conta, ContaCorrente):
+                    conta.saldo -= conta.taxas_mensais
 
-                print(f'\nTaxa atualizada!\n'
-                      f'Taxa anterior: {conta.saldo + conta.taxas_mensais:.2f}\n'
-                      f'Taxa atual: {conta.taxas_mensais:.2f}\n'
-                      f'Saldo atual: {conta.saldo:.2f}\n')
-                Interface().menu()
+                    print(f'\nTaxa atualizada!\n'
+                          f'Taxa anterior: {conta.saldo + conta.taxas_mensais:.2f}\n'
+                          f'Taxa atual: {conta.taxas_mensais:.2f}\n'
+                          f'Saldo atual: {conta.saldo:.2f}\n')
+                    return Interface().menu()
 
-            else:
-                print(f'Conta não encontrada')
+                else:
+                    print(f'\nConta não encontrada\n')
+            except ValueError:
+                print('\nNº da conta inválido\n')
 
 
 class ContaPoupanca(ContaBancaria):
@@ -696,25 +721,28 @@ class ContaPoupanca(ContaBancaria):
     def novo_mes(cls):
 
         while True:
+            try:
+                nr_conta = int(input('informe o nº da conta: '))
+                conta = ContaBancaria.buscar_conta(nr_conta)
 
-            nr_conta = int(input('informe o nº da conta: '))
-            conta = ContaBancaria.buscar_conta(nr_conta)
+                if conta and isinstance(conta, ContaPoupanca):
 
-            if conta and isinstance(conta, ContaPoupanca):
+                    saldo_calculado = conta.saldo * (0.5 / 100)
 
-                saldo_calculado = conta.saldo * (0.5 / 100)
+                    conta.saldo += saldo_calculado
+                    conta.saques_mensais = 3
 
-                conta.saldo += saldo_calculado
-                conta.saques_mensais = 3
+                    print(f'\nNovo mês atualizado!\n'
+                          f'Saldo anterior: {conta.saldo - saldo_calculado:.2f}\n'
+                          f'Saldo atual (com rendimento de 0.5%): {conta.saldo:.2f}\n'
+                          f'Saques disponíveis: {conta.saques_mensais}')
+                    Interface().menu()
 
-                print(f'\nNovo mês atualizado!\n'
-                      f'Saldo anterior: {conta.saldo - saldo_calculado:.2f}\n'
-                      f'Saldo atual (com rendimento de 0.5%): {conta.saldo:.2f}\n'
-                      f'Saques disponíveis: {conta.saques_mensais}')
-                Interface().menu()
+                else:
+                    print(f'\nConta não encontrada\n')
 
-            else:
-                print(f'Conta não encontrada')
+            except ValueError:
+                print('\nNº conta inválido\n')
 
     @classmethod
     def saque(cls, nr_conta, senha, valor):
@@ -833,8 +861,6 @@ class Estoque:
         with open("banco_de_dados.txt", 'w', encoding='utf8') as arquivo:
 
             lista_pessoas = Pessoa.retornar_todas_pessoas()
-
-            contas_pessoais = set()
 
             for pessoa in lista_pessoas:  # acesso todas as pessoas.
 
@@ -961,9 +987,6 @@ class Estoque:
                                 banco.contas_bancarias.append(conta)
 
 class Interface:
-
-    def __init__(self):
-        pass
 
     def menu(self):
 
@@ -1117,21 +1140,25 @@ class Interface:
     @staticmethod
     def buscar_conta():
         interface = Interface()
+        while True:
+            try:
+                teste_nro_conta = int(input('\nDigite o Nº da conta: '))
+                conta = ContaBancaria.buscar_conta(teste_nro_conta)
 
-        per = int(input('\nDigite o Nº da conta: '))
-        conta = ContaBancaria.buscar_conta(per)
+                if conta and isinstance(conta, ContaCorrente):
+                    conta.info()
+                    interface.menu()
 
-        if conta and isinstance(conta, ContaCorrente):
-            conta.info()
-            interface.menu()
+                elif conta and isinstance(conta, ContaPoupanca):
+                    conta.info()
+                    interface.menu()
 
-        if conta and isinstance(conta, ContaPoupanca):
-            conta.info()
-            interface.menu()
+                else:
+                    print(f'\nconta não existe\n')
+                    interface.menu()
 
-        else:
-            print(f'\nconta não existe\n')
-            interface.menu()
+            except ValueError:
+                print("\nNº da conta inválido.\n")
 
     @staticmethod
     def atualizar_estoque():
