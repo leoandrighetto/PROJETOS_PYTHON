@@ -1,5 +1,3 @@
-#########
-
 import re
 
 
@@ -89,6 +87,13 @@ class Pessoa:
         for pessoa in cls.__todas_as_pessoas:
             if cpf == pessoa.cpf:
                 return pessoa
+
+    @classmethod
+    def buscar_conta(cls, teste_nro_conta):
+        for pessoa in cls.__todas_as_pessoas:
+            for conta in pessoa.contas_bancarias:
+                if teste_nro_conta == conta.nro_conta:
+                    return conta
 
     @classmethod
     def listar_pessoas(cls):
@@ -210,12 +215,15 @@ class Banco:
 
         if cls.__todos_os_bancos:
             for banco in cls.__todos_os_bancos:
-                print(f'\nNome: {banco.nome} | CNPJ: {banco.cnpj}\n'
-                      f'Nº do Banco: {banco.nro_banco}')
+                print(f'\nBANCO {banco.nome}')
+                print(f'\nCNPJ: {banco.cnpj}\n'
+                      f'Nº do Banco: {banco.nro_banco}\n')
+                if banco.contas_bancarias:
+                    Banco.info_contas(banco)
             Interface().menu()
 
         else:
-            print(f'Não existem pessoas cadastradas neste sistema.')
+            print(f'Não existem bancos cadastradas neste sistema.')
             Interface().menu()
 
     def info_banco(self):
@@ -225,9 +233,9 @@ class Banco:
               f'CNPJ: {self.cnpj}\n')
 
     @staticmethod
-    def info_contas( banco):
+    def info_contas(banco):
 
-        print('CONTAS DO BANCO:\n')
+        print('Contas do Banco:\n')
         for conta in banco.contas_bancarias:
 
             if isinstance(conta, ContaCorrente):
@@ -246,29 +254,53 @@ class Banco:
                 return banco
 
     @classmethod
+    def buscar_conta(cls, teste_nro_conta):
+        for banco in cls.__todos_os_bancos:
+            for conta in banco.contas_bancarias:
+                if teste_nro_conta == conta.nro_conta:
+                        return conta
+
+    @classmethod
     def fechar_conta(cls):
+
         while True:
             try:
-                nro = int(input("Digite o número da conta que deseja fechar: ").strip())
-                conta = ContaBancaria.buscar_conta(nro)
+                nro_conta = int(input("Digite o número da conta que deseja fechar: ").strip())
+                conta = ContaBancaria.buscar_conta(nro_conta)
 
                 if not conta:
-                    print("Conta não encontrada.")
+                    print("\nConta não encontrada.\n")
                     return
 
                 if conta:
-                    ContaBancaria.todas_as_contas().remove(conta)
 
-                    if conta.titular and conta in conta.titular.contas_bancarias:
-                        conta.titular.contas_bancarias.remove(conta)
+                    senha = input('\nDigite a senha: ')
+                    teste_senha = ContaBancaria.verifica_senha(nro_conta, senha)
 
-                    if conta.banco and conta in conta.banco.contas_bancarias:
-                        conta.banco.contas_bancarias.remove(conta)
+                    if teste_senha:
+                        ContaBancaria.todas_as_contas().remove(conta)
 
-                print(f"\nConta {nro} fechada com sucesso!\n")
+                        lista_pessoas = Pessoa.retornar_todas_pessoas()
+                        conta_pessoal = Pessoa.buscar_conta(nro_conta)
 
-                Estoque.atualizar_estoque()
-                Interface().menu()
+                        if conta_pessoal:
+                            for pessoa in lista_pessoas:
+                                if conta_pessoal in pessoa.contas_bancarias:
+                                    pessoa.contas_bancarias.remove(conta_pessoal)
+
+                        lista_bancos = Banco.__todos_os_bancos
+                        conta_banco = Banco.buscar_conta(nro_conta)
+
+                        if conta_banco:
+                            for banco in lista_bancos:
+                                if conta_banco in banco.contas_bancarias:
+                                    banco.contas_bancarias.remove(conta_banco)
+
+                    print(f"\nConta {nro_conta} fechada com sucesso!\n")
+
+                    Estoque.atualizar_estoque()
+                    Estoque.carregar_estoque()
+                    Interface().menu()
 
             except ValueError:
                 print('\nNº da conta inválido\n')
@@ -369,7 +401,7 @@ class ContaBancaria:
                         print(f'{chave} inválido(a)')
 
             pessoa = Pessoa.buscar_cpf(dados_conta[0])
-            banco = Banco.buscar_banco(dados_conta[1])
+            banco = Banco.buscar_banco(int(dados_conta[1]))
             conta = ContaBancaria.buscar_conta(dados_conta[2])
 
             if pessoa:
@@ -383,7 +415,7 @@ class ContaBancaria:
 
                             if tipo.lower() == "1":
                                 conta_atual = ContaCorrente(pessoa, banco, int(dados_conta[2]), dados_conta[3], 0.0,
-                                                            0.0)
+                                                            20.00)
                                 ContaBancaria.adicionar_conta(conta_atual)
                                 banco.contas_bancarias = conta_atual
                                 pessoa.contas_bancarias = conta_atual
@@ -449,7 +481,7 @@ class ContaBancaria:
             if teste_nro_conta == conta.nro_conta:
 
                 if senha == conta.senha:
-                    print("\nSENHA CORRETA\n")
+                    print("\nSENHA CORRETA")
 
                     return conta
         return None
@@ -468,7 +500,7 @@ class ContaBancaria:
                     if teste_nro_conta == conta.nro_conta:
 
                         if senha == conta.senha:
-                            print("\nSENHA CORRETA\n")
+                            print("\nSENHA CORRETA")
                             return conta
                 return None
 
@@ -498,7 +530,7 @@ class ContaBancaria:
                     print('Valor inválido')
 
         else:
-            return f'Saque não realizado, dados inválidos'
+            print(f'Saque não realizado, dados inválidos\n')
 
     @classmethod
     def saque_input(cls):
@@ -515,15 +547,18 @@ class ContaBancaria:
                     if valor:
                         conta.saldo -= valor
 
-                        print(f'Saque Realizado!\n'
-                              f'Saldo atual: {conta.saldo:.2f}\n\n')
+                        print(f'\nSaque Realizado!\n'
+                              f'Saldo anterior: {conta.saldo + valor}\n'
+                              f'Saldo atual: {conta.saldo:.2f}\n')
+                        Estoque.atualizar_estoque()
                         return Interface().menu()
 
                 except ValueError:
                     print('Valor inválido')
 
         else:
-            return f'Saque não realizado, conta ou senhas inexistentes ou inválidas'
+            print(f'\nSaque não realizado, dados inválidos\n')
+            return Interface().menu()
 
     @classmethod
     def deposito(cls, nr_conta, senha, valor: float):
@@ -540,7 +575,9 @@ class ContaBancaria:
                     conta.saldo += valor
 
                     print(f'Depósito Realizado!\n'
-                          f'Saldo atual: {conta.saldo:.2f}\n\n')
+                          f'Saldo anterior: {conta.saldo - valor}\n'
+                          f'Saldo atual: {conta.saldo:.2f}\n')
+                    Estoque.atualizar_estoque()
                     return Interface().menu()
 
                 except ValueError:
@@ -571,7 +608,9 @@ class ContaBancaria:
                             conta.saldo += valor
 
                             print(f'Depósito Realizado!\n'
-                                  f'Saldo atual: {conta.saldo:.2f}\n\n')
+                                   f'Saldo anterior: {conta.saldo - valor}\n'
+                                  f'Saldo atual: {conta.saldo:.2f}\n')
+                            Estoque.atualizar_estoque()
                             return Interface().menu()
 
                         except ValueError:
@@ -582,8 +621,6 @@ class ContaBancaria:
 
             except ValueError:
                 print(f'\nNº da conta inválido.\n')
-
-
 
     @classmethod
     def retorna_conta(cls):
@@ -738,6 +775,7 @@ class ContaPoupanca(ContaBancaria):
                           f'Saldo anterior: {conta.saldo - saldo_calculado:.2f}\n'
                           f'Saldo atual (com rendimento de 0.5%): {conta.saldo:.2f}\n'
                           f'Saques disponíveis: {conta.saques_mensais}')
+                    Estoque.atualizar_estoque()
                     Interface().menu()
 
                 else:
@@ -764,6 +802,7 @@ class ContaPoupanca(ContaBancaria):
                           f'Saldo anterior: {conta.saldo + valor:.2f}\n'
                           f'Saldo atual: {conta.saldo:.2f}\n'
                           f'Qnt saques disponíveis: {conta.saques_mensais}\n\n')
+                    Estoque.atualizar_estoque()
                     Interface().menu()
                 else:
                     print('Serviço de saque indisponível.')
@@ -794,6 +833,7 @@ class ContaPoupanca(ContaBancaria):
                               f'Saldo anterior: {conta.saldo + valor}\n'
                               f'Saldo atual: {conta.saldo:.2f}\n'
                               f'Qnt saques disponíveis: {conta.saques_mensais}\n\n')
+                        Estoque.atualizar_estoque()
                         Interface().menu()
                     else:
                         print('\nServiço de saque indisponível.\n')
@@ -838,9 +878,10 @@ class Validacoes:
 
     @staticmethod
     def validar_nro_banco(valor):
-        valor_str = str(valor)
 
-        if valor_str.isdigit() and len(valor_str) == 4:
+        valor_str = int(valor)
+
+        if valor_str:
             return valor_str
 
         else:
@@ -1106,7 +1147,7 @@ class Interface:
         print(f'\nBusca de cliente\n'
               f'Exemplo de CPF: 000.000.000-00\n\n')
 
-        cpf = input('Digite o cpf do cliente: ')
+        cpf = input('Digite o CPF do cliente: ')
 
         pessoa = Pessoa.buscar_cpf(cpf)
 
@@ -1128,7 +1169,7 @@ class Interface:
 
         interface = Interface()
 
-        per = input('\nDigite o Nº do banco: ')
+        per = int(input('\nDigite o Nº do banco: '))
         banco = Banco.buscar_banco(per)
 
         if banco:
