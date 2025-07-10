@@ -5,10 +5,10 @@ class Pessoa:
     __todas_as_pessoas = []
 
     def __init__(self, nome, sobrenome, idade: int, cpf):
-        self.nome = nome  # STRING
-        self.sobrenome = sobrenome  # STRING
-        self.idade = idade  # INT
-        self.__cpf = cpf  # STRING
+        self.nome = nome
+        self.sobrenome = sobrenome
+        self.idade = idade
+        self.__cpf = cpf
         self.__contas_bancarias = []
 
     @property
@@ -166,7 +166,6 @@ class Banco:
 
     @classmethod
     def criar_banco(cls):
-        # self,titular,banco,nro_conta,saldo,senha
 
         print('\nCADASTRO DE BANCO\n')
 
@@ -178,7 +177,7 @@ class Banco:
             val = Validacoes()
             validar_banco = {'Nome': val.validar_nome,
                              'CNPJ': val.validar_cnpj,
-                             'Número': val.validar_nro_banco}
+                             'Nº': val.validar_nro_banco}
 
             dados_banco = []
 
@@ -197,13 +196,14 @@ class Banco:
 
             novo_banco = Banco(dados_banco[0], dados_banco[1], dados_banco[2])
 
-            busca = Banco.buscar_banco(dados_banco[2])
+            busca = Banco.buscar_banco(int(dados_banco[2]))
 
             if not busca:
                 cls.__todos_os_bancos.append(novo_banco)
 
                 print('\nBanco cadastrado com sucesso!\n')
                 Estoque().atualizar_estoque()
+                Estoque().carregar_estoque()
                 Interface().menu()
 
             else:
@@ -247,7 +247,7 @@ class Banco:
         return f'Banco não possui contas'
 
     @classmethod
-    def buscar_banco(cls, nro_banco):
+    def buscar_banco(cls, nro_banco: int):
 
         for banco in cls.__todos_os_bancos:
             if nro_banco == banco.nro_banco:
@@ -258,7 +258,7 @@ class Banco:
         for banco in cls.__todos_os_bancos:
             for conta in banco.contas_bancarias:
                 if teste_nro_conta == conta.nro_conta:
-                        return conta
+                    return conta
 
     @classmethod
     def fechar_conta(cls):
@@ -421,6 +421,7 @@ class ContaBancaria:
                                 pessoa.contas_bancarias = conta_atual
                                 print('Conta criada!')
                                 Estoque().atualizar_estoque()
+                                Estoque().carregar_estoque()
                                 interface.menu()
 
                             elif tipo.lower() == "2":
@@ -522,8 +523,8 @@ class ContaBancaria:
                     conta.saldo -= valor
 
                     print(f'Saque Realizado!\n'
-                          f'Saque anterior: {conta.saldo + valor}\n'
-                          f'Saldo atual: {conta.saldo:.2f}\n\n')
+                          f'Saque anterior: R$ {conta.saldo + valor:.2f}\n'
+                          f'Saldo atual: R$ {conta.saldo:.2f}\n\n')
                     return Interface().menu()
 
                 except ValueError:
@@ -548,8 +549,8 @@ class ContaBancaria:
                         conta.saldo -= valor
 
                         print(f'\nSaque Realizado!\n'
-                              f'Saldo anterior: {conta.saldo + valor}\n'
-                              f'Saldo atual: {conta.saldo:.2f}\n')
+                              f'Saldo anterior: R$ {conta.saldo + valor:.2f}\n'
+                              f'Saldo atual: R$ {conta.saldo:.2f}\n')
                         Estoque.atualizar_estoque()
                         return Interface().menu()
 
@@ -575,8 +576,8 @@ class ContaBancaria:
                     conta.saldo += valor
 
                     print(f'Depósito Realizado!\n'
-                          f'Saldo anterior: {conta.saldo - valor}\n'
-                          f'Saldo atual: {conta.saldo:.2f}\n')
+                          f'Saldo anterior: R$ {conta.saldo - valor:.2f}\n'
+                          f'Saldo atual: R$ {conta.saldo:.2f}\n')
                     Estoque.atualizar_estoque()
                     return Interface().menu()
 
@@ -608,8 +609,8 @@ class ContaBancaria:
                             conta.saldo += valor
 
                             print(f'Depósito Realizado!\n'
-                                   f'Saldo anterior: {conta.saldo - valor}\n'
-                                  f'Saldo atual: {conta.saldo:.2f}\n')
+                                  f'Saldo anterior: R$ {conta.saldo - valor:.2f}\n'
+                                  f'Saldo atual: R$ {conta.saldo:.2f}\n')
                             Estoque.atualizar_estoque()
                             return Interface().menu()
 
@@ -633,12 +634,12 @@ class ContaBancaria:
             titular = conta.titular.cpf
 
             if isinstance(conta, ContaCorrente):
-                conta_formatada.append(f'#CONTA ContaCorrente({titular},{banco},{str(conta.nro_conta)},'
+                conta_formatada.append(f'#CONTA ContaCorrente({titular},{banco},{int(conta.nro_conta)},'
                                        f'{conta.senha},{str(conta.saldo)},{str(conta.taxas_mensais)})\n')
 
             if isinstance(conta, ContaPoupanca):
                 conta_formatada.append(
-                    f'#CONTA ContaPoupanca({titular},{banco},{str(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
+                    f'#CONTA ContaPoupanca({titular},{banco},{int(conta.nro_conta)},{conta.senha},{str(conta.saldo)},'
                     f'{str(conta.rendimentos)},{str(conta.saques_mensais)})\n')
 
         return conta_formatada
@@ -672,7 +673,6 @@ class ContaCorrente(ContaBancaria):
 
         self.__taxas_mensais = taxas_mensais
 
-    # Atributos Protegidos
     @property
     def taxas_mensais(self):
         return self.__taxas_mensais
@@ -687,8 +687,8 @@ class ContaCorrente(ContaBancaria):
               f'Titular: {self.titular.nome}\n'
               f'Banco: {self.banco.nome}\n'
               f'Nº da conta: {self.nro_conta}\n'
-              f'Saldo: {self.saldo:.2f}\n'
-              f'Taxas Mensais: {self.taxas_mensais:.2f}\n')
+              f'Saldo: R$ {self.saldo:.2f}\n'
+              f'Taxas Mensais: R$ {self.taxas_mensais:.2f}\n')
 
     @classmethod
     def novo_mes(cls):
@@ -702,9 +702,10 @@ class ContaCorrente(ContaBancaria):
                     conta.saldo -= conta.taxas_mensais
 
                     print(f'\nTaxa atualizada!\n'
-                          f'Taxa anterior: {conta.saldo + conta.taxas_mensais:.2f}\n'
-                          f'Taxa atual: {conta.taxas_mensais:.2f}\n'
-                          f'Saldo atual: {conta.saldo:.2f}\n')
+                          f'Saldo anterior: R$ {conta.saldo + conta.taxas_mensais:.2f}\n'
+                          f'Taxa atual: R$ {conta.taxas_mensais:.2f}\n'
+                          f'Saldo atual: R$ {conta.saldo:.2f}\n')
+                    Estoque().atualizar_estoque()
                     return Interface().menu()
 
                 else:
@@ -714,7 +715,6 @@ class ContaCorrente(ContaBancaria):
 
 
 class ContaPoupanca(ContaBancaria):
-    __contas_poupanca = []
 
     def __init__(self, titular, banco, nro_conta, senha, saldo: float = 0.0, rendimentos: float = 0.5,
                  saques_mensais: int = 3):
@@ -739,21 +739,13 @@ class ContaPoupanca(ContaBancaria):
     def saques_mensais(self, novo_saques_mensais):
         self.__saques_mensais = novo_saques_mensais
 
-    @classmethod
-    def adicionar_conta_poupanca(cls, nova_conta_poupanca):
-        if not cls.__contas_poupanca:
-            cls.__contas_poupanca.append(nova_conta_poupanca)
-        else:
-            if nova_conta_poupanca not in cls.__contas_poupanca:
-                cls.__contas_poupanca.append(nova_conta_poupanca)
-
     def info(self):
         print(f'> CONTA POUPANÇA <\n'
               f'Titular: {self.titular.nome}\n'
               f'Banco: {self.banco.nome}\n'
               f'Nº da conta: {self.nro_conta}\n'
-              f'Saldo: R${self.saldo:.2f}\n'
-              f'Rendimentos: R${self.rendimentos:.2f}\n'
+              f'Saldo: R$ {self.saldo:.2f}\n'
+              f'Rendimentos: R$ {self.rendimentos:.2f}\n'
               f'Saques Mensais: {self.saques_mensais}\n')
 
     @classmethod
@@ -772,8 +764,8 @@ class ContaPoupanca(ContaBancaria):
                     conta.saques_mensais = 3
 
                     print(f'\nNovo mês atualizado!\n'
-                          f'Saldo anterior: {conta.saldo - saldo_calculado:.2f}\n'
-                          f'Saldo atual (com rendimento de 0.5%): {conta.saldo:.2f}\n'
+                          f'Saldo anterior: R$ {conta.saldo - saldo_calculado:.2f}\n'
+                          f'Saldo atual (com rendimento de 0.5%): R$ {conta.saldo:.2f}\n'
                           f'Saques disponíveis: {conta.saques_mensais}')
                     Estoque.atualizar_estoque()
                     Interface().menu()
@@ -799,9 +791,9 @@ class ContaPoupanca(ContaBancaria):
                     conta.saques_mensais -= 1
 
                     print(f'Saque Realizado!\n'
-                          f'Saldo anterior: {conta.saldo + valor:.2f}\n'
-                          f'Saldo atual: {conta.saldo:.2f}\n'
-                          f'Qnt saques disponíveis: {conta.saques_mensais}\n\n')
+                          f'Saldo anterior: R$ {conta.saldo + valor:.2f}\n'
+                          f'Saldo atual: R$ {conta.saldo:.2f}\n'
+                          f'Saques disponíveis: {conta.saques_mensais}\n\n')
                     Estoque.atualizar_estoque()
                     Interface().menu()
                 else:
@@ -811,7 +803,7 @@ class ContaPoupanca(ContaBancaria):
 
 
         except ValueError:
-            return 'valor inválido'
+            print('valor inválido')
 
     @classmethod
     def saque_input(cls):
@@ -856,8 +848,13 @@ class Validacoes:
         return bool(re.fullmatch(r"[A-Za-zÀ-ÿ\s]+", valor))
 
     @staticmethod
-    def validar_idade(valor):
-        return valor.isdigit()
+    def validar_idade(valor: int):
+        valor_str = str(valor)
+
+        if valor_str.isdigit():
+            valor_str = int(valor_str)
+            if valor_str >= 16:
+                return valor_str
 
     @staticmethod
     def validar_cpf(valor):
@@ -872,20 +869,20 @@ class Validacoes:
         return re.fullmatch(r"[0-9]{2}\.[0-9]{3}\.[0-9]{3}/[0-9]{4}-[0-9]{2}", valor)
 
     @staticmethod
-    def validar_nro_conta(valor):
-        if re.fullmatch(r'[0-9]{5}', valor):
-            return int(valor)
+    def validar_nro_conta(valor: int):
+
+        valor_str = str(valor)
+
+        if valor_str.isdigit() and re.fullmatch(r'\d{5}', valor_str):
+            return int(valor_str)
 
     @staticmethod
-    def validar_nro_banco(valor):
+    def validar_nro_banco(valor: int):
 
-        valor_str = int(valor)
+        valor_str = str(valor)
 
-        if valor_str:
-            return valor_str
-
-        else:
-            return False
+        if valor_str.isdigit() and re.fullmatch(r'\d{4}', valor_str):
+            return int(valor_str)
 
     @staticmethod
     def validar_saldo(valor):
@@ -1024,7 +1021,8 @@ class Estoque:
                             existente = any(
                                 c.nro_conta == nro_conta and c.banco.nro_banco == nro_banco for c in lista_contas)
                             if not existente:
-                                conta = ContaPoupanca(titular, banco, nro_conta, senha, saldo, rendimentos, saques_mensais)
+                                conta = ContaPoupanca(titular, banco, nro_conta, senha, saldo, rendimentos,
+                                                      saques_mensais)
                                 lista_contas.append(conta)
                                 titular.contas_bancarias.append(conta)
                                 banco.contas_bancarias.append(conta)
@@ -1097,6 +1095,9 @@ class Interface:
 
                     case 14:
                         self.atualizar_estoque()
+
+                    case _:
+                        print(f'\nInválido.\n')
 
 
 
