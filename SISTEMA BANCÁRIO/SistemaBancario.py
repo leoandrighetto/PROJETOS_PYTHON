@@ -1,4 +1,4 @@
-####
+#######333
 import re
 
 
@@ -551,6 +551,7 @@ class ContaBancaria:
                         Estoque.atualizar_estoque()
                         return Interface().menu()
 
+
                 except ValueError:
                     print('Valor inválido')
 
@@ -620,7 +621,7 @@ class ContaBancaria:
                             print('\nValor inválido\n')
 
                 else:
-                    return f'\nDepósito não realizado, dados inválidos\n'
+                    print(f'\nDepósito não realizado, dados inválidos\n')
 
             except ValueError:
                 print(f'\nNº da conta inválido.\n')
@@ -782,7 +783,7 @@ class ContaPoupanca(ContaBancaria):
                 print('\nNº conta inválido\n')
 
     @classmethod
-    def saque(cls, nro_conta, senha, valor):
+    def saque(cls, nro_conta: int, senha, valor: float):
 
         try:
             valor = float(valor)
@@ -823,21 +824,28 @@ class ContaPoupanca(ContaBancaria):
                     valor = float(input('Digite o valor do saque: '))
 
                     if conta.saques_mensais > 0 and conta.saldo > 0:
+
                         conta.saldo -= valor
                         conta.saques_mensais -= 1
 
                         print(f'\nSaque Realizado!\n'
                               f'Saldo anterior: {conta.saldo + valor}\n'
                               f'Saldo atual: {conta.saldo:.2f}\n'
-                              f'Qnt saques disponíveis: {conta.saques_mensais}\n\n')
+                              f'Qnt saques disponíveis: {conta.saques_mensais}\n')
+
                         Estoque.atualizar_estoque()
                         Interface().menu()
-                    else:
 
-                        return '\nVocê não tem saques disponíveis.'
+
+                    else:
+                        print('\nSaque indisponível.\n')
+                        return
 
                 except ValueError:
                     print('\nValor inválido!\n')
+        else:
+            print(f'\nSaque não realizado, dados inválidos\n')
+            return Interface().menu()
 
 
 class Validacoes:
@@ -1257,9 +1265,9 @@ if __name__ == '__main__':
 
 
     ## MÉTODO NOVO_MES CONTA CORRENTE (nro_conta = 54321)
-
-    print(ContaCorrente.novo_mes())
-    print()
+    #
+    # print(ContaCorrente.novo_mes())
+    # print()
 
 
 
@@ -1277,7 +1285,7 @@ if __name__ == '__main__':
 
     # print(ContaPoupanca.saque_input())
     # print()
-    # Interface().menu()
+
 
 
 
@@ -1287,4 +1295,4 @@ if __name__ == '__main__':
 
 
 
-
+    Interface().menu()
