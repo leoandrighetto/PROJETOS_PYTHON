@@ -1,0 +1,57 @@
+class Pessoa:
+    def __init__(self, nome, cpf, data_nascimento, endereco):
+        self.nome = nome
+        self.__cpf = cpf
+        self.data_nascimento = data_nascimento
+        self.endereco = endereco
+
+    @property
+    def cpf(self):
+        return self.__cpf
+
+    @cpf.setter
+    def cpf(self, novo_cpf):
+        self.__cpf = novo_cpf
+
+
+class Funcionario(Pessoa):
+    def __init__(self, nome, cpf, data_nascimento, endereco, cargo):
+        super().__init__(nome, cpf, data_nascimento, endereco)
+
+        self.cargo = cargo
+
+class Reserva:
+
+
+class Validacoes:
+
+
+class interface:
+
+
+criar
+reserva
+hospede
+dados
+
+acompanhantes
+dados
+
+quarto
+dados
+
+forma
+de
+pagamento
+
+consultar
+reserva
+criar
+quarto
+dados
+
+adicionar
+funcionario
+dados
+
+adicionar
